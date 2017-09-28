@@ -4,7 +4,7 @@ function gplayer(){
 	this.finalpos = undefined;
 	this.finaldir = undefined; 
 	this.last_killed = Infinity;
-	this.trace = [];
+	this.trace = []; // {update_no_personal, pos[], direction}
 	this.pnts = 0;
 	// trace won't include the point of death
 }
@@ -84,7 +84,7 @@ function Grid(nora, noca){
 		return;
 		
 	}
-	this.create_and_set_player_at(pid, inipos, dir){
+	this.create_and_set_player_at(pid, inipos, dir) = function(pid, inipos, dir){
 		// Creating gplayer
 		var babyGplayer = new gplayer();
 		babyGplayer.the_id = pid;
@@ -101,11 +101,11 @@ function Grid(nora, noca){
 		return;
 	}
 
-	this.get_alive_players(){
+	this.get_alive_players() = function(){
 		return current_gplayers;
 	}
 
-	this.update(){
+	this.update() = function(){
 		// returning 0 means false, 1 means true, and 10 means game over
 		if (!should_update){
 			return 0;
@@ -150,11 +150,11 @@ function Grid(nora, noca){
 		return 1;
 	}
 
-	this.get_killed_list(){
+	this.get_killed_list() = function(){
 		return killed_gplayers;
 	}
 
-	this.add_sequence(seq){
+	this.add_sequence(seq) = function(){
 		should_update = false;
 		var i = finder(seq[0], seq_of_moves, 0);
 		if (i == seq_of_moves.length){
@@ -186,22 +186,102 @@ function Grid(nora, noca){
 		}
 	}
 
-	this.make_ready_for_update(){
+	this.make_ready_for_update() = function(){
 		initialize_players();
 		should_update = true;
 	}
 
-	this.oracle(seq){
+	this.oracle(seq) = function(){
 		oracle_update_number = seq[0];
 		respawn_dead(oracle_update_number);
+		oracle_remove_pseudo_future_trace_from_players();
 		oracle_clear_board_from(oracle_update_number);
-		oracle_change_head(seq[1], dirn);
+		oracle_change_new_head(seq[1], seq[2]);
 		oracle_extrapolate(oracle_update_number);
 		return;
 	}
-	this.oracle_clear_board_from(update_no){
-		
+
+	this.oracle_remove_pseudo_future_trace_from_players(after) = function(after){
+		for (p in current_gplayers){
+			var ptl = p.trace.length;
+			int rmi = p.trace.length;
+			for (var i = ptl - 1; i >= 0; i--) {
+				if (p.trace[i][0] <= after){
+					rmi = i + 1;
+					break;
+				}
+			}
+			p.trace.splice(rmi, ptl - rmi);
+			p.finalpos = p.trace[rmi - 1][1];
+			p.finaldir = p.trace[rmi - 1][2];
+		}
+		return;
 	}
+
+
+	this.oracle_clear_board_from(update_no) = function(update_no){
+		for (var ro in board){
+			for (var i = 0; i < ro.length; i++) {
+				if (ro[i] != undefined && ro[i][0] > update_no){
+					ro[i] = undefined;
+				}
+			}
+		}
+	}
+
+	this.oracle_change_new_head(pida, dirna) = function(pida, dirna){
+		for (var kl = 0; kl < current_gplayers.length; kl++){
+			if (current_gplayers[kl].the_id == pida){
+				current_gplayers[kl].finaldir = dirna;
+				return;
+			}
+		}
+	}
+
+	this.oracle_extrapolate(from_this_no) = function(from_this_no){
+		var cnt = from_this_no;
+		while (cnt < current_update_number){
+			move(cnt);
+			remove_killed_from_board();
+			cnt++;
+		}
+	}
+
+	this.move(curr_time) = function(curr_time){
+		var kill_list = [];
+		for (var p in current_gplayers){
+			var hd = p.finalpos;
+			var arrow = p.finaldir;
+			var newpos = [(hd[0] + arrow[0]), (hd[1] + arrow[1])];
+			var host;
+			if (is_out_of_range(newpos)){
+				//kill(p);
+				kill_list.push(p);
+			}
+			else{
+				host = board[newpos[0]][newpos[1]];
+			}
+			if (host != undefined){ // i.e. host has some owner
+				if (host[1] == p.the_id){
+					kill_list.push(p);
+				}
+				else if (host[0] == curr_time+1){
+					kill_list.push(get_owner_by_pid(host[1]));
+					kill_list.push(p);
+				}
+			}
+			if (!kill_list.includes(p)){
+				board[newpos[0]][newpos[1]] = new lattice((curr_time+1), p.the_id, arrow);
+				p.trace.push([(curr_time+1), newpos, arrow]);
+			}
+		}
+		for (var a in kill_list){
+			kill(a);
+		}
+	}
+
+	this.kill()
+
 	this.finder(what, in_this_list, ith_elem_of_each_elem){
 		//finds the smallest index r such that ith_elem_of_each_elem of elem at index at r
 		// is >= what and returns it
