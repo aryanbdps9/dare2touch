@@ -41,7 +41,7 @@ function game_session(gameidarg) {
 	this.setInterval_ki_id = undefined;
 	this.last_processed_update = 0;
 	this.update_gap_lim = 5;
-
+	this.player_seq = [];
 	this.start_game() = function(){
 		// assumes that game_id is valid, and players are filled, NumOfPlayers is \
 		// correctly set and update_freq is set.
@@ -80,7 +80,7 @@ function game_session(gameidarg) {
 			num_of_players++;
 		}
 	}
-	this.add_input_sequence(seq) = function(player_id){
+	this.add_input_sequence(seq) = function(player_id, seq){
 		ind = players.indexOf(player_id);
 		obj_live_players[ind].addinp(inps, timestmp);
 		//TODO: Checking should be taken care of
@@ -88,6 +88,7 @@ function game_session(gameidarg) {
 		//This fn will return smthng
 		if (seq[0] < last_processed_update){ // i.e it's an old request
 			if ((seq[0] + update_gap_lim) < last_processed_update){
+				
 				// if it has been killed or has been involved in killing then simply inform it 
 				// that its request is rejected and make no other changes here(i.e, ditch this input)
 				// else :
@@ -96,6 +97,7 @@ function game_session(gameidarg) {
 					// a the current time
 					// broadcast the message to every player then
 					// make corrections to own grid and then change player sequences.
+
 
 			}
 			else{
