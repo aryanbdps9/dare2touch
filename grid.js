@@ -191,14 +191,31 @@ function Grid(nora, noca){
 		should_update = true;
 	}
 
-	this.oracle(seq) = function(){
-		oracle_update_number = seq[0];
+	this.oracle(seq) = function(seq){
+		var oracle_update_number = seq[0];
 		respawn_dead(oracle_update_number);
 		oracle_remove_pseudo_future_trace_from_players();
 		oracle_clear_board_from(oracle_update_number);
 		oracle_change_new_head(seq[1], seq[2]);
 		oracle_extrapolate(oracle_update_number);
 		return;
+	}
+
+	this.respawn_dead(from_this_time) = function(from_this_time){
+		var birth_list = [];
+		for (var p in killed_gplayers){
+			if (p.last_killed >= from_this_time){
+				if (!birth_list.includes(p)){
+					birth_list.push(p);
+				}
+			}
+		}
+		for (var p in birth_list){
+			if (!current_gplayers.includes(p)){
+				current_gplayers.push(p);
+				p.last_killed = Infinity;
+			}
+		}
 	}
 
 	this.oracle_remove_pseudo_future_trace_from_players(after) = function(after){
@@ -242,7 +259,7 @@ function Grid(nora, noca){
 		var cnt = from_this_no;
 		while (cnt < current_update_number){
 			move(cnt);
-			remove_killed_from_board();
+			//remove_killed_from_board(); done in kill only
 			cnt++;
 		}
 	}
@@ -276,13 +293,29 @@ function Grid(nora, noca){
 			}
 		}
 		for (var a in kill_list){
-			kill(a);
+			kill(a, curr_time+1);
 		}
 	}
 
-	this.kill()
+	this.kill(plr, time_of_death) = function(plr, time_of_death){
+		var indx = current_gplayers.indexOf(plr)
+		if (indx > -1){
+			var oddd = current_gplayers.splice(indx, 1);
+			if (!killed_gplayers.includes(oddd)){
+				killed_gplayers.push(oddd);
+				oddd.last_killed = time_of_death;
+			}
 
-	this.finder(what, in_this_list, ith_elem_of_each_elem){
+			//now remove plr from board
+			for (i in oddd.trace){
+				var target_pos_x = i[1][0];
+				var target_pos_y = i[1][1];
+				board[target_pos_x][target_pos_y] = undefined;
+			}
+		}
+	}
+
+	this.finder(what, in_this_list, ith_elem_of_each_elem) = function(what, in_this_list, ith_elem_of_each_elem){
 		//finds the smallest index r such that ith_elem_of_each_elem of elem at index at r
 		// is >= what and returns it
 		if (in_this_list.length == 0) return 0;
