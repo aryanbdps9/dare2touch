@@ -8,6 +8,8 @@ Class Grid:
 		last_killed = infinity
 		trace{update_no_personal, pos[], direction} //won't include the point of death
 
+
+
 	Data members:
 		1-> Initial list of {player id, pnts} (iniList_Playr) = []
 		2-> sequence_of_moves{up_no, pid, dirn} = []
@@ -54,6 +56,7 @@ Class Grid:
 
 			actual_current_up_no = actual_current_up_no + 1             //Behold
 			update_update_number = current_update_number
+
 			if (!sequence_of_unprocessed_moves.empty()){
 				update_update_number = seq[0][0]
 			}
@@ -92,15 +95,16 @@ Class Grid:
 					return
 
 			else:
-				if (sequence_of_unprocessed_moves.length > 0):
-					get index of smallest_elder_entry in sequence_of_unprocessed_moves (let j)
-					insert seq at j
-				else:
-					insert seq at 0
+				//if (sequence_of_unprocessed_moves.length > 0):
+				//	get index of smallest_elder_entry in sequence_of_unprocessed_moves (let j)
+				//	insert seq at j
+				//else:
+				//	insert seq at 0
 
-				move the elem in sequence_of_moves (from i onwards) into the end of sequence_of_unprocessed_moves
+				move the elem in sequence_of_moves (from i onwards) into the start of sequence_of_unprocessed_moves
 					should_update = true
 					return
+
 
 		7-> make_ready_for_update():
 			Initialize_players()
@@ -158,3 +162,26 @@ Class Grid:
 		12-> getOwner(pos)
 
 		13-> respawn_dead():
+
+		14-> finder(what, in_this_list, ith_elem_of_each_elem){
+			//finds the smallest index r such that ith_elem_of_each_elem of elem at index at r
+			// is >= what and returns it
+			if in_this_list is empty, return 0
+			if last elem is < 'what' return in_this_list.length
+
+			function finder_help(start_ind, end_ind){
+				mid_ind = floor((start_ind + end_ind)/2); 
+				if (in_this_list[mid_ind] < 'what'){
+					return finder_help(mid_ind+1, end_ind);
+				}
+				else if (mid_ind == 0 || in_this_list[mid_ind-1] < 'what'){
+					return mid_ind
+				}
+				else{
+					return finder_help(start_ind, mid_ind);
+				}
+			}
+
+			res = finder_help(0, in_this_list.length)
+			return res
+		}
