@@ -55,7 +55,7 @@ function Grid(nora, noca){
 	this.initialize_players() = function(){
 		self.clear_board();
 		//create and position players()
-		this.c_position_players();
+		self.c_position_players();
 	}
 	this.c_position_players() = function(){
 		var cppx = [];
@@ -337,14 +337,20 @@ function Grid(nora, noca){
 		res = finder_help(0, in_this_list.length);
 		return res;
 	}
+
 	this.get_actual_up_no() = function(){
 		return actual_current_up_no;
 	}
+
 	this.killed_pid_list() = function(){
 		killed_list = [];
 		for (var p in killed_gplayers){
 			killed_list.push(p.the_id);
 		}
 		return killed_list;
+	}
+
+	this.ini_player_list_length() = function(){
+		return ini_list_pid_and_pnts.length;
 	}
 }
