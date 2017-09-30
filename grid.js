@@ -337,4 +337,14 @@ function Grid(nora, noca){
 		res = finder_help(0, in_this_list.length);
 		return res;
 	}
+	this.get_actual_up_no() = function(){
+		return actual_current_up_no;
+	}
+	this.killed_pid_list() = function(){
+		killed_list = [];
+		for (var p in killed_gplayers){
+			killed_list.push(p.the_id);
+		}
+		return killed_list;
+	}
 }
