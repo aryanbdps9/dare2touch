@@ -1,0 +1,62 @@
+game_session_class:
+	Data Members:
+		game_id
+		players[]
+		dead_players[]
+		j_requests[] // player id's of join_request senders
+		NumOfPlayers
+		unprocessed_input_sequence[]
+		Grid[][]
+		should_update
+		update_freq
+		setInterval_ki_id
+		temp_new_sequence[] // Each elem is {played_id, input};
+
+	Member functions:
+		start_game():
+			assumes that game_id is valid, and players are filled, NumOfPlayers is \
+			correctly set and update_freq is set.
+			reset_grid()
+			set should_update to True
+			invokes: setInterval(updator, update_freq)
+
+		stop_game():
+			sets should_update to False
+			//invokes: clearInterval(setInterval_ki_id)
+
+		kill_player(player_id):
+			set should_update to False
+			put that player_id in dead_players[]
+			set the index occupied by player_id by undefined
+			decrease NumOfPlayers
+			update grid
+			update scores
+			if NumOfPlayers > 1:
+				set should_update to True and invoke setInterval(updator, update_freq)
+			else:
+				call game_finished()
+
+		add_player(player_id):
+			players.push(player_id)
+			NumOfPlayers++
+
+		add_input_sequence(player_id, inp):
+			temp_new_sequence.push({player_id, inp})
+			update input_sequence in players k andar ka object
+
+		updator()
+		process_input(player_id, input):
+		// oops! I did it in add_input_sequence()
+			invokes add_player and returns status and further response \
+			given back to client
+			may even result in ending the game, either temporarily or permanent
+
+		game_finished():
+			//TODO: later, aalas aa rha hai abhi
+			send message to the winner that he is the winner
+		reset_grid():
+			set whole of grid to NO_OWNER
+			then place the players in their correct places
+
+		start_again():
+		//TODO: complete after first iteration.

@@ -1,0 +1,15 @@
+game_session_class:
+	Data Members:
+		Grid
+		Players[]
+		// both of them contain {player_id, direction, update_no}
+		Unprocessed_seq[]
+		Processed_seq[]
+		
+
+	Member functions:
+		give_last_up_req(player_id){
+			gives the last update_no, when this player sent
+			a key_press request
+		}
+

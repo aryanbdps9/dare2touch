@@ -101,7 +101,7 @@ Class Grid:
 				//else:
 				//	insert seq at 0
 
-				move the elem in sequence_of_moves (from i onwards) into the start of sequence_of_unprocessed_moves
+				move the elem in sequence_of_moves (from i onwards) into the start of sequence_of_unprocessed_moves and then insert seq at 0
 					should_update = true
 					return
 
