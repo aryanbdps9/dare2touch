@@ -6,6 +6,7 @@ function gplayer(){
 	this.last_killed = Infinity;
 	this.trace = []; // {update_no_personal, pos[], direction}
 	this.pnts = 0;
+	this.killed_by = undefined;
 	// trace won't include the point of death
 }
 
@@ -61,16 +62,51 @@ function Grid(nora, noca){
 				var j = self.finder(seq[0], seq_of_unprocessed_moves, 0);
 				seq_of_unprocessed_moves.splice(j, 0, seq);
 				should_update = true;
-				return;
+				// return;
 			}
 			else{
 				console.log('directly pushed');
 				seq_of_unprocessed_moves.push(seq);
 				should_update = true;
-				return;
+				// return;
 			}
+			var pno = seq[1];
+			var temp_un = seq[0];
+			var temp_p = self.get_owner_by_pid(pno);
+			var temp_p_trace = temp_p.trace;
+			console.log("temp_p_trace = ", temp_p_trace)
+			for (var i = temp_p_trace.length - 1; i >= 0; --i){
+				if (temp_p_trace[i][0] == temp_un){
+					console.log("changing trace of player: ", pno, "this is old trace:");
+					temp_p_trace[i][2] = seq[2];
+					console.log("i was: ", i, "this is new trace:");
+					console.log(temp_p_trace);
+					break;
+				}
+				else{
+					console.log("temp_p_trace[i][0] = ", temp_p_trace[i][0], "; temp_un = ", temp_un);
+				}
+			}
+			return;
 		}
 		else{
+			var pno = seq[1];
+			var temp_un = seq[0];
+			var temp_p = self.get_owner_by_pid(pno);
+			var temp_p_trace = temp_p.trace;
+			console.log("temp_p_trace = ", temp_p_trace)
+			for (var i = temp_p_trace.length - 1; i >= 0; --i){
+				if (temp_p_trace[i][0] == temp_un){
+					console.log("changing trace of player: ", pno, "this is old trace:");
+					temp_p_trace[i][2] = seq[2];
+					console.log("i was: ", i, "this is new trace:");
+					console.log(temp_p_trace);
+					break;
+				}
+				else{
+					console.log("temp_p_trace[i][0] = ", temp_p_trace[i][0], "; temp_un = ", temp_un);
+				}
+			}
 			temp_array = seq_of_moves.splice(i, seq_of_moves.length - i);
 			seq_of_unprocessed_moves.splice.apply(seq_of_unprocessed_moves, [0, 0].concat(temp_array));
 			seq_of_unprocessed_moves.unshift(seq); // inserted at the beginning
@@ -112,7 +148,7 @@ function Grid(nora, noca){
 		if (!should_update){
 			return 0;
 		}
-		else if (current_gplayers.length < 2){
+		else if (current_gplayers.length < 1){
 			return 10;
 		}
 		// else:
@@ -158,6 +194,7 @@ function Grid(nora, noca){
 		}
 
 		if (actual_current_up_no != current_update_number){
+			console.log("diff exists b/w act_un and cur_um");
 			cur_n = current_update_number;
 			current_update_number = actual_current_up_no;
 			self.oracle_extrapolate(cur_n);
@@ -255,9 +292,9 @@ function Grid(nora, noca){
 	this.oracle = function(seq){
 		var oracle_update_number = seq[0];
 		self.respawn_dead(oracle_update_number);
-		self.oracle_remove_pseudo_future_trace_from_players();
+		self.oracle_remove_pseudo_future_trace_from_players(oracle_update_number);
 		self.oracle_clear_board_from(oracle_update_number);
-		self.oracle_change_new_head(seq[1], seq[2]);
+		self.oracle_change_new_head(seq[0], seq[1], seq[2]);
 		self.oracle_extrapolate(oracle_update_number);
 		return;
 	}
@@ -274,14 +311,46 @@ function Grid(nora, noca){
 		birth_list.forEach(function(p){
 			if (!current_gplayers.includes(p)){
 				current_gplayers.push(p);
+				if (p.killed_by != undefined){
+					var killer_obj = self.get_owner_by_pid(p.killed_by);
+					killer_obj.pnts = killer_obj.pnts - 1;
+					for (var ii = ini_list_pid_and_pnts.length - 1; ii >= 0; --ii){
+						if (ini_list_pid_and_pnts[ii][0] == p.killed_by){
+							ini_list_pid_and_pnts[ii][1] = ini_list_pid_and_pnts[ii][1] - 1;
+							break;
+						}
+					}
+					ii = undefined;
+					killer_obj = undefined;
+					p.killed_by = undefined
+				}
 				p.last_killed = Infinity;
+				var pt = p.trace;
+				// pt.forEach(function(lt){
+				// 	var temp_lat = new lattice(lt[0], p.the_id, lt[2]);
+				// 	var temp_x = pt[1][0];
+				// 	var temp_y = pt[1][1];
+				// 	board[temp_x][temp_y] = temp_lat;
+				// 	temp_lat = undefined;
+				// 	temp_x = undefined;
+				// 	temp_y = undefined;
+				// });
+			}
+			if (killed_gplayers.includes(p)){
+				var inddd = killed_gplayers.indexOf(p);
+				killed_gplayers.splice(inddd, 1);
+				inddd = undefined;
 			}
 		});
+		console.log("birth_list:")
+		console.log(birth_list)
 		birth_list = undefined;
 	}
 
 	this.oracle_remove_pseudo_future_trace_from_players = function(after){
 		current_gplayers.forEach(function(p){
+			// console.log("trace at the starting of rem_pseudo_fut_trace: (p = ", p.the_id, ")");
+			// console.log(p.trace);
 			var ptl = p.trace.length;
 			var rmi = p.trace.length;
 			for (var i = ptl - 1; i >= 0; i--) {
@@ -293,26 +362,35 @@ function Grid(nora, noca){
 			p.trace.splice(rmi, ptl - rmi);
 			p.finalpos = p.trace[rmi - 1][1];
 			p.finaldir = p.trace[rmi - 1][2];
+			// console.log("trace at the end of rem_pseudo_fut_trace:");
+			// console.log(p.trace);
 		});
 		return;
 	}
-
 
 	this.oracle_clear_board_from = function(update_no){
 		for (var rr = 0; rr < grid_num_row; rr++){
 			ro = board[rr];
 			for (var i = 0; i < ro.length; i++) {
-				if (ro[i] != undefined && ro[i][0] > update_no){
+				if (ro[i] != undefined && ro[i].un > update_no){
 					ro[i] = undefined;
+					console.log("cleared board at pos: (", rr, ", ", i, ")");
 				}
 			}
 		}
 	}
 
-	this.oracle_change_new_head = function(pida, dirna){
+	this.oracle_change_new_head = function(at_this_uid, pida, dirna){
 		for (var kl = 0; kl < current_gplayers.length; kl++){
 			if (current_gplayers[kl].the_id == pida){
 				current_gplayers[kl].finaldir = dirna;
+				var cgt = current_gplayers[kl].trace;
+				for (var i = cgt.length - 1; i >= 0; i--) {
+					if (cgt[i][0] == at_this_uid){
+						cgt[i][2] = dirna;
+						break;
+					}
+				}
 				return;
 			}
 		}
@@ -350,17 +428,33 @@ function Grid(nora, noca){
 					kill_list.push(p);
 				}
 				else if (host.un == curr_time){
-					kill_list.push(self.get_owner_by_pid(host.pid));
-					kill_list.push(p);
-					console.log("plr " +p.the_id+ " and plr" + self.get_owner_by_pid(host.un) + " killed\n");
+					var host_player_obj = self.get_owner_by_pid(host.pid);
+					var host_already_killd = false;
+					for (var i = kill_list.length; i >= 0; --i){
+						if (kill_list[i].the_id == host_player_obj.the_id){
+							host_already_killd = true;
+						}
+					}
+					if (!host_already_killd){
+						kill_list.push(host_player_obj);
+						kill_list.push(p);
+						console.log("plr " +p.the_id+ " and plr" + self.get_owner_by_pid(host.un) + " killed\n");
+					}
+					else{
+						kill_list.push(p);
+						console.log("plr ", p.the_id, " killed\n");
+					}
 				}
 				else{
 					kill_list.push(p);
 					pp = self.get_owner_by_pid(host.pid);
 					pp.pnts += 1;
+					p.killed_by = pp.the_id;
+					console.log("plr ", p.the_id, " killed\n");
 					for(var i = 0; i < ini_list_pid_and_pnts.length; i++){
 						if (ini_list_pid_and_pnts[i][0] == host.pid){
 							ini_list_pid_and_pnts[i][1] += 1;
+
 							break;
 						}
 					}
@@ -368,7 +462,7 @@ function Grid(nora, noca){
 			}
 
 			if (!kill_list.includes(p)){
-				console.log("entered pushing region\n");
+				// console.log("entered pushing region\n");
 				board[newpos[0]][newpos[1]] = new lattice((curr_time+1), p.the_id, arrow);
 				p.finalpos = newpos;
 				p.trace.push([(curr_time+1), newpos, arrow]);
@@ -378,26 +472,52 @@ function Grid(nora, noca){
 		});
 
 
-		for (var a in kill_list){
+		// for (a in kill_list){
+		kill_list.forEach(function (a){
+			// if (! current_gplayers.includes(a)){
+			// 	console.log("locha ki mom");
+			// }
 			self.kill(a, curr_time+1);
-		}
+		});
+		// console.log("current_gplayers:");
+		// console.log(current_gplayers);
+		// console.log("kill_list");
+		// console.log(kill_list);
+		kill_list = undefined;
 	}
 
 	this.kill = function(plr, time_of_death){
-		var indx = current_gplayers.indexOf(plr)
+		// var indx = current_gplayers.indexOf(plr);
+		// console.log("entered kill! plr = ", plr)
+		var indx = -1;
+		for (var i = current_gplayers.length - 1; i >= 0; --i){
+			if (current_gplayers[i].the_id == plr.the_id){
+				indx = i;
+				break;
+			}
+			// else{
+			// 	console.log("current_gplayers[i].the_id = " , current_gplayers[i].the_id);
+			// 	console.log("plr.the_id", plr.the_id);
+			// }
+		}
+		console.log("index in kill ", indx);
 		if (indx > -1){
-			var oddd = current_gplayers.splice(indx, 1);
+		// if (current_gplayers.includes(plr)){
+			console.log("entered removal zone!")
+			var oddd = current_gplayers.splice(indx, 1)[0];
 			if (!killed_gplayers.includes(oddd)){
 				killed_gplayers.push(oddd);
 				oddd.last_killed = time_of_death;
 			}
-
+			// console.log("oddd: ")
+			// console.log(oddd)
 			//now remove plr from board
-			for (i in oddd.trace){
+			// for (i in oddd.trace){
+			oddd.trace.forEach(function(i){
 				var target_pos_x = i[1][0];
 				var target_pos_y = i[1][1];
 				board[target_pos_x][target_pos_y] = undefined;
-			}
+			});
 			var otl = oddd.trace.length;
 			if (otl > 0){
 				if (oddd.trace[otl-1] == time_of_death){
@@ -410,6 +530,11 @@ function Grid(nora, noca){
 					}
 				}
 			}
+		}else if (killed_gplayers.includes(plr)){
+			console.log("already killed!")
+		}
+		else{
+			console.log("locha hai");
 		}
 	}
 
@@ -427,15 +552,16 @@ function Grid(nora, noca){
 		var cgl = current_gplayers.length
 		var kgl = killed_gplayers.length
 		for (var i = 0; i < cgl; i++){
-			if (current_gplayers[i] == pida){
+			if (current_gplayers[i].the_id == pida){
 				return current_gplayers[i];
 			}
 		}
 		for (var i = 0; i < kgl; i++){
-			if (killed_gplayers[i] == pida){
+			if (killed_gplayers[i].the_id == pida){
 				return killed_gplayers[i];
 			}
 		}
+		console.log("nothin found here:(");
 	}
 
 	this.finder = function(what, in_this_list, ith_elem_of_each_elem){
@@ -483,6 +609,30 @@ function Grid(nora, noca){
 		self.make_ready_for_update();
 		self.update();
 		self.update();
+		// ll = self.get_alive_players();
+	}
+	this.drama = function(){
+		self.add_sequence([1, 1, [0, 1]]);
+		self.update();self.print_grid();
+		console.log("");
+		self.add_sequence([1, 2, [0, 1]]);
+		self.update();self.print_grid();
+		console.log("");
+		self.add_sequence([3, 2, [-1, 0]]);
+		self.update();self.print_grid();
+		console.log("");
+		self.print_grid();
+		self.add_sequence([5, 2, [0, -1]]);
+		self.up_and_prt();
+		self.up_and_prt();
+		self.add_sequence([5, 1, [1, 0]]);
+		self.up_and_prt();
+	}
+
+	this.up_and_prt = function(){
+		self.update();
+		self.print_grid();
+		console.log("");
 	}
 }
 
