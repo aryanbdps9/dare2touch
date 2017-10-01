@@ -442,7 +442,7 @@ function Grid(nora, noca){
 		//finds the smallest index r such that ith_elem_of_each_elem of elem at index at r
 		// is >= what and returns it
 		if (in_this_list.length == 0) return 0;
-		if (in_this_list[in_this_list.length - 1] < what) return in_this_list.length;
+		if (in_this_list[in_this_list.length - 1][ith_elem_of_each_elem] < what) return in_this_list.length;
 
 		 var finder_help = function(start_ind, end_ind){
 			mid_ind = Math.floor((start_ind + end_ind)/2); 
