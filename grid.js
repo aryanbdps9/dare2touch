@@ -268,7 +268,7 @@ function Grid(nora, noca){
 			if (p.last_killed >= from_this_time){
 				if (!birth_list.includes(p)){
 					birth_list.push(p);
-					var index = killed_gplayers.findIndex(p);
+					var index = killed_gplayers.indexOf(p);
 					killed_gplayers.splice(index,1);
 				}
 			}
