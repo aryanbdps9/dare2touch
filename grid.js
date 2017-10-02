@@ -259,8 +259,8 @@ function Grid(nora, noca){
 			cppy.push(Math.floor(grid_num_col/4));
 			cppy.push(Math.floor(grid_num_col*3/4));
 			cppx.push(Math.floor(grid_num_row / 2));
-			cppdiri.push([-1, 0]);
-			cppdiri.push([-1, 0]);
+			cppdiri.push([0, 1]);
+			cppdiri.push([0, -1]);
 			cppiniposi.push([cppx[0], cppy[0]]);
 			cppiniposi.push([cppx[0], cppy[1]]);
 		}
@@ -328,15 +328,30 @@ function Grid(nora, noca){
 				}
 				p.last_killed = Infinity;
 				var pt = p.trace;
-				// pt.forEach(function(lt){
-				// 	var temp_lat = new lattice(lt[0], p.the_id, lt[2]);
-				// 	var temp_x = pt[1][0];
-				// 	var temp_y = pt[1][1];
-				// 	board[temp_x][temp_y] = temp_lat;
-				// 	temp_lat = undefined;
-				// 	temp_x = undefined;
-				// 	temp_y = undefined;
-				// });
+				pt.forEach(function(lt){
+					// console.log("lt: ", lt);
+					var temp_lat = new lattice(lt[0], p.the_id, lt[2]);
+					var temp_x = lt[1][0];
+					var temp_y = lt[1][1];
+					/*console.log("old board @ (", temp_x, ", ", temp_y, "): ")
+					if (board[temp_x][temp_y] != undefined){
+						console.log(board[temp_x][temp_y])
+					}
+					else {
+						console.log("u")
+					}*/
+					board[temp_x][temp_y] = temp_lat;
+					// console.log("new board @ (", temp_x, ", ", temp_y, "): ")
+					// if (board[temp_x][temp_y] != undefined){
+					// 	console.log(board[temp_x][temp_y])
+					// }
+					// else {
+					// 	console.log("u")
+					// }
+					temp_lat = undefined;
+					temp_x = undefined;
+					temp_y = undefined;
+				});
 			}
 			if (killed_gplayers.includes(p)){
 				var inddd = killed_gplayers.indexOf(p);
@@ -429,10 +444,10 @@ function Grid(nora, noca){
 					console.log("self killed!\n");
 					kill_list.push(p);
 				}
-				else if (host.un == curr_time){
+				else if (host.un == curr_time + 1){
 					var host_player_obj = self.get_owner_by_pid(host.pid);
 					var host_already_killd = false;
-					for (var i = kill_list.length; i >= 0; --i){
+					for (var i = kill_list.length - 1; i >= 0; --i){
 						if (kill_list[i].the_id == host_player_obj.the_id){
 							host_already_killd = true;
 						}
@@ -638,6 +653,13 @@ function Grid(nora, noca){
 		self.update();
 		self.print_grid();
 		console.log("");
+	}
+
+	this.repeat_up_and_prt = function(countt){
+		while (countt > 0){
+			self.up_and_prt();
+			countt--;
+		}
 	}
 }
 
