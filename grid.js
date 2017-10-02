@@ -74,17 +74,17 @@ function Grid(nora, noca){
 			var temp_un = seq[0];
 			var temp_p = self.get_owner_by_pid(pno);
 			var temp_p_trace = temp_p.trace;
-			console.log("temp_p_trace = ", temp_p_trace)
+			// console.log("temp_p_trace = ", temp_p_trace)
 			for (var i = temp_p_trace.length - 1; i >= 0; --i){
 				if (temp_p_trace[i][0] == temp_un){
-					console.log("changing trace of player: ", pno, "this is old trace:");
+					// console.log("changing trace of player: ", pno, "this is old trace^");
 					temp_p_trace[i][2] = seq[2];
-					console.log("i was: ", i, "this is new trace:");
-					console.log(temp_p_trace);
+					// console.log("i was: ", i, "this is new trace:");
+					// console.log(temp_p_trace);
 					break;
 				}
 				else{
-					console.log("temp_p_trace[i][0] = ", temp_p_trace[i][0], "; temp_un = ", temp_un);
+					// console.log("temp_p_trace[i][0] = ", temp_p_trace[i][0], "; temp_un = ", temp_un);
 				}
 			}
 			return;
@@ -94,17 +94,17 @@ function Grid(nora, noca){
 			var temp_un = seq[0];
 			var temp_p = self.get_owner_by_pid(pno);
 			var temp_p_trace = temp_p.trace;
-			console.log("temp_p_trace = ", temp_p_trace)
+			// console.log("temp_p_trace = ", temp_p_trace)
 			for (var i = temp_p_trace.length - 1; i >= 0; --i){
 				if (temp_p_trace[i][0] == temp_un){
-					console.log("changing trace of player: ", pno, "this is old trace:");
+					// console.log("changing trace of player: ", pno, "this is old trace^");
 					temp_p_trace[i][2] = seq[2];
-					console.log("i was: ", i, "this is new trace:");
-					console.log(temp_p_trace);
+					// console.log("i was: ", i, "this is new trace:");
+					// console.log(temp_p_trace);
 					break;
 				}
 				else{
-					console.log("temp_p_trace[i][0] = ", temp_p_trace[i][0], "; temp_un = ", temp_un);
+					// console.log("temp_p_trace[i][0] = ", temp_p_trace[i][0], "; temp_un = ", temp_un);
 				}
 			}
 			temp_array = seq_of_moves.splice(i, seq_of_moves.length - i);
@@ -569,15 +569,18 @@ function Grid(nora, noca){
 	this.finder = function(what, in_this_list, ith_elem_of_each_elem){
 		//finds the smallest index r such that ith_elem_of_each_elem of elem at index at r
 		// is >= what and returns it
+		// console.log("finder, what: ", what)
 		if (in_this_list.length == 0) return 0;
 		if (in_this_list[in_this_list.length - 1][ith_elem_of_each_elem] < what) return in_this_list.length;
 
-		 var finder_help = function(start_ind, end_ind){
+		var finder_help = function(start_ind, end_ind){
+			// console.log("finder: ", start_ind, ", ", end_ind);
 			mid_ind = Math.floor((start_ind + end_ind)/2); 
-			if (in_this_list[mid_ind] < what){
+			// console.log("mid_ind: ", mid_ind, "; in_this_list[", mid_ind, "] = ", in_this_list[mid_ind])
+			if (in_this_list[mid_ind][ith_elem_of_each_elem] < what){
 				return finder_help(mid_ind+1, end_ind);
 			}
-			else if (mid_ind == 0 || in_this_list[mid_ind-1] < what){
+			else if (mid_ind == 0 || in_this_list[mid_ind-1][ith_elem_of_each_elem] < what){
 				return mid_ind;
 			}
 			else{
