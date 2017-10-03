@@ -12,7 +12,7 @@ var roomno = 1;
 io.on('connection', function(socket) {
    console.log('New user connected');
 
-   if(io.nsps['/'].adapter.rooms["room-"+roomno] && io.nsps['/'].adapter.rooms["room-"+roomno].length > noofplayers) roomno++;
+   if(io.nsps['/'].adapter.rooms["room-"+roomno] && io.nsps['/'].adapter.rooms["room-"+roomno].length > noofplayers-1) roomno++;
    socket.join("room-"+roomno);
 
    socket.on('setUsername', function(data) {
