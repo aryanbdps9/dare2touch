@@ -9,7 +9,7 @@ Array.prototype.diff = function(a){
 function gs_manager(nopa){
 	var self = this;
 	// this.storedpid_list = [];
-	var the_grid = new Grid(480,720);
+	var the_grid = new Grid(10,10);
 	var current_player = 0;  // number of current players
 	var cutoff = 4;
 	var kill_list = [];
@@ -41,36 +41,50 @@ function gs_manager(nopa){
 		the_grid.make_ready_for_update();
 		console.log("Ready to start the game.");
 		alive_list = client_list;
-		setInterval(self.master(), 100);
+		//self.master();
+		var intervalObject = setInterval(self.master, 10000);
+		//var count = 0; 
+		//var intervalObject = setInterval(function () { 
+        //	count++; 
+        //	console.log(count, 'seconds passed'); 
+        //	if (count == 5) { 
+          //  	console.log('exiting'); 
+            //	clearInterval(intervalObject); 
+        	//} 
+    	//}, 1000); 
 	}
 
 	this.handle_input = function(pid,input,up_no){
-		actual_state = the_grid.get_actual_up_no();
-		if(actaul_state - up_no <= cutoff){
+		var actual_state = the_grid.get_actual_up_no();
+		if(actual_state - up_no <= cutoff){
 			if(input == "w"){
-				the_grid.add_sequence([up_no,pid,[0,1]]);
+				the_grid.add_sequence([up_no,pid,[-1,0]]);
 				console.log(pid + "move up");
+				//self.master();
 				//alive_list.forEach(function(p){
 				//	p.send(pid + "move up");
 				//});
 			}
 			else if(input == "s"){
-				the_grid.add_sequence([up_no,pid,[0,-1]]);
+				the_grid.add_sequence([up_no,pid,[1,0]]);
 				console.log(pid + "move down");
+				//self.master();
 				//alive_list.forEach(function(p){
 				//	p.send(pid + "move down");
 				//});
 			}
 			else if(input == "a"){
-				the_grid.add_sequence([up_no,pid,[1,0]]);
+				the_grid.add_sequence([up_no,pid,[0,-1]]);
 				console.log(pid + "move left");
+				//self.master();
 				//alive_list.forEach(function(p){
 				//	p.send(pid + "move left");
 				//});
 			}
 			else if(input == "d"){
-				the_grid.add_sequence([up_no,pid,[-1,0]]);
+				the_grid.add_sequence([up_no,pid,[0,1]]);
 				console.log(pid + "move right");
+				//self.master();
 				//alive_list.forEach(function(p){
 				//	p.send(pid + "move right");
 				//});
@@ -98,7 +112,7 @@ function gs_manager(nopa){
 	}
 
 	this.master = function(){
-		the_grid.update();
+		the_grid.up_and_prt();
 		self.up_kill_list();
 	}
 }
