@@ -10,7 +10,7 @@ game_sessions.find_game = function(player, gid, nop){
 		else{
 			player.home_game = list_of_games[gid]
 			list_of_games[gid].add_player(player)
-			if (list_of_games[gid].nop == nop){
+			if (list_of_games[gid].full){
 				list_of_games[gid].start_updating()
 			}
 			return true;
@@ -30,8 +30,16 @@ game_sessions.onMessage = function(player, message){
 	var lo_number = plr_home_game.get_actual_update_no() - cutoff;
 	inp_seq = pid.append(parsed_message_list) // [up_no, plr_no, dirn]
 	if (inp_seq[0] >= lo_number){
-		plr_home_game.gc.add_sequence(inp_seq)
-		broadcast all the players of plr_home_game that this player has moved
+		var tmp_dir = inp_seq[2];
+		var tmp_x = Math.abs(tmp_dir[0]);
+		var tmp_y = Math.abs(tmp_dir[1]);
+		if ((tmp_x == 1 && tmp_y == 0) || (tmp_x == 0 && tmp_y == 1)){
+			plr_home_game.gc.add_sequence(inp_seq)
+			broadcast all the players of plr_home_game that this player has moved
+		}
+		else {
+			player.send("req for inp_seq[0] is rejected")
+		}
 	}
 	else {
 		player.send("req for inp_seq[0] is rejected")
