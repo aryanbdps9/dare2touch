@@ -75,10 +75,10 @@ function Grid(nora, noca){
 			var temp_p = self.get_owner_by_pid(pno);
 			var temp_p_trace = temp_p.trace;
 			// console.log("temp_p_trace = ", temp_p_trace)
-			for (var i = temp_p_trace.length - 1; i >= 0; --i){
-				if (temp_p_trace[i][0] == temp_un){
+			for (var ii = temp_p_trace.length - 1; ii >= 0; --ii){
+				if (temp_p_trace[ii][0] == temp_un){
 					// console.log("changing trace of player: ", pno, "this is old trace^");
-					temp_p_trace[i][2] = seq[2];
+					temp_p_trace[ii][2] = seq[2];
 					// console.log("i was: ", i, "this is new trace:");
 					// console.log(temp_p_trace);
 					break;
@@ -95,10 +95,10 @@ function Grid(nora, noca){
 			var temp_p = self.get_owner_by_pid(pno);
 			var temp_p_trace = temp_p.trace;
 			// console.log("temp_p_trace = ", temp_p_trace)
-			for (var i = temp_p_trace.length - 1; i >= 0; --i){
-				if (temp_p_trace[i][0] == temp_un){
+			for (var ii = temp_p_trace.length - 1; ii >= 0; --ii){
+				if (temp_p_trace[ii][0] == temp_un){
 					// console.log("changing trace of player: ", pno, "this is old trace^");
-					temp_p_trace[i][2] = seq[2];
+					temp_p_trace[ii][2] = seq[2];
 					// console.log("i was: ", i, "this is new trace:");
 					// console.log(temp_p_trace);
 					break;
@@ -229,8 +229,10 @@ function Grid(nora, noca){
 		}
 	}
 
-
-
+	this.remove_player = function(pida){
+		self.add_sequence([actual_current_up_no, pida,[0,0]]);
+	}
+	
 	this.initialize_players = function(){
 		self.clear_board();
 		//create and position players()
