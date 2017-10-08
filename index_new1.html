@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Server</title>
+   </head>
+   
+   <script src = "/socket.io/socket.io.js"></script>
+   <script>
+      var socket = io();
+
+      function Join() {
+         socket.emit('setPlayerID', document.getElementById('PlayerID').value);
+      };
+
+      socket.on('GameIDExists', function(data) {
+         document.getElementById('error-container').innerHTML = data;
+      });
+
+      socket.on('PlayerIDExists', function(data) {
+         document.getElementById('error-container').innerHTML = data;
+      });
+
+      socket.on('settingPlayerID', function(data){
+         game_ID = document.getElementById('GameID').value;
+         no_OfPlayers = document.getElementById('NoOfPlayers').value;
+         socket.emit('setGameID', {gameID:game_ID, playerID:data, noOfPlayers:no_OfPlayers});
+
+      });
+   
+      
+   </script>
+   
+   <body>
+      <div id = "error-container"></div>
+      <input id = "PlayerID" type = "text" name = "PlayerID" value = "" 
+         placeholder = "Enter Username!">
+      <input id = "GameID" type = "text" name = "GameID" value = "" 
+         placeholder = "Enter GameID!">
+      <input id = "NoOfPlayers" type = "text" name = "NoOfPlayers" value = "" 
+         placeholder = "Enter the No. of Players!">
+      <button type = "button" name = "button" onclick = "Join()">
+         Connect!!
+      </button>
+   </body>
+</html>
