@@ -11,6 +11,7 @@ function gc(gid, nop = 2, isServer = false){
 	var interval = 100; // time after which kallar is called;
 	var self = this;
 	started = false;
+	var game_ID = gid;
 
 //	initial_procedure:
 	if (!isServer){
@@ -36,6 +37,13 @@ function gc(gid, nop = 2, isServer = false){
 
 	this.client_add_player = function(pid){
 		grid.add_player(pid);
+	}
+
+	this.start_start = function(){
+		server_player_obj_list.forEach(function(p){
+			p.emit('starting_game');
+		});
+		setTimeout(self.start_updating, 3000);
 	}
 
 	this.start_updating = function(){
@@ -110,7 +118,7 @@ function gc(gid, nop = 2, isServer = false){
 		var temp_list = inp_string.split("#");
 		var type_casted_temp_list = [parseInt(temp_list[0]), parseInt(temp_list[1])];
 		var temp_dir_list = [parseInt(temp_list[2]), parseInt(temp_list[3])];
-		var type_casted_temp_list.push(temp_dir_list);
+		type_casted_temp_list.push(temp_dir_list);
 		temp_dir_list = undefined;
 		return type_casted_temp_list;
 	}
@@ -168,6 +176,10 @@ function gc(gid, nop = 2, isServer = false){
 		self.client_add_player(myid);
 	}
 
+	this.client_count_display = function(){
+
+	}
+
 	this.config_connection = function(){
 		self.socket = io.connect();
 		self.socket.on('disconnect', this.client_ondisconnect); //
@@ -181,5 +193,6 @@ function gc(gid, nop = 2, isServer = false){
 		self.socket.on('move', self.client_handle_move); //
 		self.socket.on('game_over', self.client_game_over); //
 		self.socket.on('killit', self.client_kill_player); 
+		self.socket.on('starting_game', self.client_count_display);
 	}
 }
