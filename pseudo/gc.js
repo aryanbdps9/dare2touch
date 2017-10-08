@@ -14,19 +14,19 @@ function gc(gid, nop = 2, isServer = false){
 
 //	initial_procedure:
 	if (!isServer){
+		self.myid;
+		self.client_last_input_string = '';
 		self.config_connection();
 	}
 
 	this.server_add_player = function(player){
 		// here player is the socket obj and it contains pid
-
 		server_player_obj_list.forEach(function(p){
 			p.emit('s_add_player', player.pid);
 		});
 		server_player_obj_list.forEach(function(p){
 			player.emit('s_add_player', p.pid);
 		});
-
 		server_player_obj_list.push(player);
 		current_nop++;
 		if (current_nop == max_nop){
@@ -62,6 +62,42 @@ function gc(gid, nop = 2, isServer = false){
 		}
 	}
 
+	if (!isServer){
+		if (started){
+			document.addEventListener('keydown', function(event){
+				if (started){
+					var pressed = false;
+					var temp_seq = "";
+					var keyNm = event.keyCode || event.which;
+					if (keyNm == 37 || keyNm == 65){
+						//left
+						temp_seq = "0#-1";
+						pressed = true;
+					}
+					else if (keyNm == 38 || keyNm == 87){
+						//up
+						temp_seq = "-1#0";
+						pressed = true;
+					}
+					else if (keyNm == 37 || keyNm == 68){
+						//right
+						temp_seq = "0#1";
+						pressed = true;
+					}
+					else if (keyNm == 40 || keyNm == 83){
+						//down
+						temp_seq = "1#0";
+						pressed = true;
+					}
+					temp_seq = grid.get_actual_up_no().toString() + "#" + self.myid.toString() + "#" + temp_seq;
+					if (pressed){
+						self.client_last_input_string = temp_seq;
+					}
+				}
+			});
+		}
+	}
+
 	this.client_handle_move = function(data){
 		// data will be of following format:
 		// str(update_no-pid-x-y) // str means string
@@ -71,12 +107,23 @@ function gc(gid, nop = 2, isServer = false){
 	}
 
 	this.input_data_parser = function(inp_string){
-		var temp_list = inp_string.split("-");
+		var temp_list = inp_string.split("#");
 		var type_casted_temp_list = [parseInt(temp_list[0]), parseInt(temp_list[1])];
 		var temp_dir_list = [parseInt(temp_list[2]), parseInt(temp_list[3])];
 		var type_casted_temp_list.push(temp_dir_list);
 		temp_dir_list = undefined;
 		return type_casted_temp_list;
+	}
+
+	this.client_handle_input = function(){
+		var temp_str = self.client_last_input_string;
+		var temp_seq = self.client_last_input_string.split("#");
+		var pressed = false;
+		if (temp_seq.length > 1){
+			self.client_last_input_string = "";
+			return {pressed:true, data_string:temp_str};
+		}
+		else return {pressed:false, data_string:""};
 	}
 
 	this.kallar = function(){
@@ -99,19 +146,40 @@ function gc(gid, nop = 2, isServer = false){
 		}
 	}
 
-	this.config_connection(){
-		self.socket = io.socket();
-		self.socket.on('disconnect', this.client_ondisconnect);
+	
+	this.client_kill_player = function(pida){
+		grid.remove_player(pida);
+	}
+
+	this.client_ondisconnect = function(){
+		if (update_switch != undefined){
+			clearInterval(update_switch);
+			update_switch = undefined;
+		}
+		self.grid.stop_game();
+	}
+
+	this.client_onconnected = function(data){
+		var myid = data.id;
+		if (data.nop){
+			self.max_nop = nop;
+		}
+		self.myid = myid;
+		self.client_add_player(myid);
+	}
+
+	this.config_connection = function(){
+		self.socket = io.connect();
+		self.socket.on('disconnect', this.client_ondisconnect); //
 
 		//Handle when we connect to the server, showing state and storing id's.
-		self.socket.on('onconnected', this.client_onconnected);
-
+		self.socket.on('onconnected', this.client_onconnected);//
 		//On error we just show that we are not connected for now. Can print the data.
 		self.socket.on('error', self.client_ondisconnect);
-		self.socket.on('s_add_player', self.client_add_player); #
-		self.socket.on('game_start', self.start_updating); #
-		self.socket.on('move', self.client_handle_move); #
-		self.socket.on('game_over', self.client_game_over); #
-		self.socket.on('killit', self.client_kill_player);
+		self.socket.on('s_add_player', self.client_add_player); //
+		self.socket.on('game_start', self.start_updating); //
+		self.socket.on('move', self.client_handle_move); //
+		self.socket.on('game_over', self.client_game_over); //
+		self.socket.on('killit', self.client_kill_player); 
 	}
 }
