@@ -1,4 +1,5 @@
 function gc(gid, nop = 2, isServer = false){
+	console.log("new gc created");
 	var grid_require = require('./grid');
 	// var grid = new grid_require(480, 720);
 	var nor = 480, noc = 720;
@@ -13,6 +14,8 @@ function gc(gid, nop = 2, isServer = false){
 	started = false;
 	var game_ID = gid;
 
+	console.log("game_ID set to ", game_ID, "\tgid is ", gid);
+
 //	initial_procedure:
 	if (!isServer){
 		self.myid;
@@ -20,7 +23,16 @@ function gc(gid, nop = 2, isServer = false){
 		self.config_connection();
 	}
 
+	this.get_gameID = function(){
+		return game_ID;
+	}
+
+	this.get_full = function(){
+		return full;
+	}
+
 	this.server_add_player = function(player){
+		console.log("server_add_player called");	
 		// here player is the socket obj and it contains pid
 		server_player_obj_list.forEach(function(p){
 			p.emit('s_add_player', player.pid);
@@ -33,6 +45,7 @@ function gc(gid, nop = 2, isServer = false){
 		if (current_nop == max_nop){
 			full = true;
 		}
+		console.log("current_nop:" , current_nop, "\tmax_nop:", max_nop, "\tfull=", full);
 	}
 
 	this.client_add_player = function(pid){
@@ -196,3 +209,5 @@ function gc(gid, nop = 2, isServer = false){
 		self.socket.on('starting_game', self.client_count_display);
 	}
 }
+
+module.exports = gc;

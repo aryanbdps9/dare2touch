@@ -7,14 +7,20 @@ app.get('/', function(req, res) {
 });
 
 
-
-game = require('./gc');
+var list_of_games=[];
+var game = require('./gc');
 
 get_owner_by_gid = function(gid){
+	console.log("get_owner_by_gid called");
    var temp = list_of_games.length;
       for (var i = 0; i < temp; i++){
-         if (list_of_games[i].game_ID == gid){
+         if (list_of_games[i].get_gameID() == gid){
             return list_of_games[i];
+            //console.log(list_of_games[i]);
+         }
+         else {
+         	//console.log(list_of_games[i].get_gameID());
+         	//console.log(list_of_games[i].game_ID, gid);
          }
       }
    }
@@ -31,7 +37,7 @@ io.on('connection', function(socket) {
       NoOfPlayers = data.noOfPlayers;
       var g1 = get_owner_by_gid(Game_ID);
       if(list_of_games.indexOf(g1) > -1){
-         if(g1.full){
+         if(g1.get_full()){
             socket.emit('GameIDExists','The game with GameID '+ g1.game_ID+ ' is full. Try after sometime!!');
          }
          else{
