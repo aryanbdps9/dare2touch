@@ -14,14 +14,14 @@ function rendere(board,gnor,gnoc){
 				ctx.closePath();
 			}
 			else{
-				if(arr[rr][i][0] == 1){
+				if(arr[rr][i].pid == 1){
 					ctx.beginPath();
 					ctx.rect(50*i,50*rr, 50, 50);
 					ctx.fillStyle = "green";
 					ctx.fill();
 					ctx.closePath();
 				}
-				else if(arr[rr][i][0] == 0){
+				else if(arr[rr][i].pid == 0){
 					ctx.beginPath();
 					ctx.rect(50*i,50*rr,50,50);
 					ctx.fillStyle = "red";
