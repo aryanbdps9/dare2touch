@@ -23,6 +23,7 @@
 		socket.on('settingPlayerID', function(data){
 			game_ID = document.getElementById('GameID').value;
 			no_OfPlayers = document.getElementById('NoOfPlayers').value;
+			alert("player id is set. waiting for game id");
 			socket.emit('setGameID', {gameID:game_ID, playerID:data, noOfPlayers:no_OfPlayers});
 
 		});    

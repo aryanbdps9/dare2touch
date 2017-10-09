@@ -7,11 +7,13 @@ var gc = function(gid, nop = 2, isServer = false){
 	this.grid = undefined;
 	if (isServer){
 		var grid_require = require('./grid');
-		grid = new grid_require(this.nor, this.noc);
+		this.grid = new grid_require(this.nor, this.noc);
+		console.log("grid created.");
+		// console.log(grid);
 	}
 
 	else{
-		grid = new Grid(this.nor, this.noc);
+		this.grid = new Grid(this.nor, this.noc);
 	}
 	this.isServer = isServer;
 	this.full = false;
@@ -79,6 +81,14 @@ var gc = function(gid, nop = 2, isServer = false){
 
 gc.prototype.get_max_nop = function(){
 	return this.max_nop;
+};
+
+gc.prototype.get_isServer = function(){
+	return this.isServer;
+};
+
+gc.prototype.get_grid = function(){
+	return this.grid;
 };
 
 gc.prototype.get_nor = function(){
@@ -157,6 +167,8 @@ gc.prototype.start_start = function(){
 gc.prototype.start_updating = function(){
 	console.log("start_updating called");
 	if (this.isServer){
+		console.log("server part being called");
+		console.log(this.get_isServer());
 		this.server_player_obj_list.forEach(function(p){
 			p.emit('game_start');
 			this.update_switch = setInterval(this.kallar, this.interval);
@@ -165,6 +177,8 @@ gc.prototype.start_updating = function(){
 		this.started = true;
 	}
 	else{
+		console.log("client part being called");
+		console.log(this.get_isServer());
 		this.update_switch = setInterval(this.kallar, this.interval);
 		this.started = true;
 	}
@@ -249,15 +263,15 @@ gc.prototype.client_ondisconnect = function(){
 	this.grid.stop_game();
 };
 
-
-gc.prototype.client_onconnected = function(data){
-	var myid = data.playerID;
+// gc.prototype.client_onconnected = function(data){
+gc.prototype.client_onconnected = function(){
+	// var myid = data.playerID;
 	// if (data.nop){
 	// 	this.max_nop = nop;
 	// }
-	this.max_nop = data.noOfPlayers;
-	this.myid = myid;
-	this.client_add_player(this.myid);
+	// this.max_nop = data.noOfPlayers;
+	// this.myid = myid;
+	// this.client_add_player(this.myid);
 };
 
 gc.prototype.get_socket = function(){
@@ -269,7 +283,7 @@ gc.prototype.get_socket = function(){
 gc.prototype.config_connection = function(){
 	this.socket = io.connect();
 	console.log("socket inside gc:");
-	console.log(socket);
+	console.log(this.socket);
 	this.socket.on('disconnect', this.client_ondisconnect); //
 
 	//Handle when we connect to the server, showing state and storing id's.

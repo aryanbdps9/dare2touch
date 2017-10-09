@@ -59,6 +59,7 @@ io.on('connection', function(socket) {
 	//if(io.nsps['/'].adapter.rooms["room-"+roomno] && io.nsps['/'].adapter.rooms["room-"+roomno].length > noofplayers-1) roomno++;
 	
 		socket.on('setGameID', function(data) {
+		console.log("caught setGameID");
 		Game_ID = data.gameID;
 		PlayerID = data.playerID;
 		NoOfPlayers = data.noOfPlayers;
@@ -95,6 +96,7 @@ io.on('connection', function(socket) {
 			socket.emit('PlayerIDExists', 'PlayerID ' + data + ' already exists! Try another PlayerID');
 		} else {
 			list_of_playerID.push(data);
+			console.log("will now emit setPlayerID");
 			socket.emit('settingPlayerID', data);
 		}
 	});
