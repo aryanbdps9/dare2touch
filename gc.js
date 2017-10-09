@@ -23,8 +23,18 @@ function gc(gid, nop = 2, isServer = false){
 		self.config_connection();
 	}
 
+	this.max_nop = function(){
+		return max_nop;
+	}
+
 	this.get_gameID = function(){
 		return game_ID;
+	}
+
+	this.set_gameID = function(newgid){
+		console.log("changing game_ID. Old game_ID = ", game_ID);
+		game_ID = newgid;
+		console.log("new game_ID = ", game_ID);
 	}
 
 	this.get_full = function(){
@@ -196,10 +206,11 @@ function gc(gid, nop = 2, isServer = false){
 	}
 
 	this.client_onconnected = function(data){
-		var myid = data.id;
-		if (data.nop){
-			self.max_nop = nop;
-		}
+		var myid = data.playerID;
+		// if (data.nop){
+		// 	self.max_nop = nop;
+		// }
+		self.max_nop = noOfPlayers;
 		self.myid = myid;
 		self.client_add_player(myid);
 	}
@@ -216,12 +227,16 @@ function gc(gid, nop = 2, isServer = false){
 		self.socket.on('onconnected', this.client_onconnected);//
 		//On error we just show that we are not connected for now. Can print the data.
 		self.socket.on('error', self.client_ondisconnect);
-		self.socket.on('s_add_player', self.client_add_player); //
+		// self.socket.on('s_add_player', self.client_add_player); //
 		self.socket.on('game_start', self.start_updating); //
 		self.socket.on('move', self.client_handle_move); //
 		self.socket.on('game_over', self.client_game_over); //
 		self.socket.on('killit', self.client_kill_player); 
 		self.socket.on('starting_game', self.client_count_display);
+	}
+
+	this.get_socket = function(){
+		return self.socket;
 	}
 }
 
