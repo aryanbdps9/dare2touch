@@ -1,4 +1,4 @@
-function rendere(board,gnor,gnoc){
+function renderer(board,gnor,gnoc){
 	// var arr = [[],[],[],[],[],[],[],[],[],[]];
 	// arr[1] = [[1,2,3],[0,1,4],[0,2,3]];
 	// arr[2] = [[0,2,3],[1,1,3],[1,1,2]];
@@ -32,3 +32,5 @@ function rendere(board,gnor,gnoc){
 		}
 	}
 }
+
+module.exports = renderer;
