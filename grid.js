@@ -663,6 +663,16 @@ function Grid(nora, noca){
 			countt--;
 		}
 	}
+
+	this.stop_game = function(){
+		should_update = false;
+	}
 }
 
-module.exports = Grid;
+if(typeof exports == 'undefined'){
+    // var exports = this['Grid'] = {};
+}
+else{
+	module.exports = Grid;
+}
+// module.exports = Grid;

@@ -6,7 +6,7 @@ function renderer(board,gnor,gnoc){
 	var ctx = canvas.getContext("2d");
 	for (var rr = 0; rr < gnor; rr++){
 		for (var i = 0; i < gnoc; i++){
-			if(arr[rr][i] == undefined){
+			if(board[rr][i] == undefined){
 				ctx.beginPath();
 				ctx.rect(50*i,50*rr,50,50);
 				ctx.fillStyle = "grey";
@@ -14,14 +14,14 @@ function renderer(board,gnor,gnoc){
 				ctx.closePath();
 			}
 			else{
-				if(arr[rr][i].pid == 1){
+				if(board[rr][i].pid == 1){
 					ctx.beginPath();
 					ctx.rect(50*i,50*rr, 50, 50);
 					ctx.fillStyle = "green";
 					ctx.fill();
 					ctx.closePath();
 				}
-				else if(arr[rr][i].pid == 0){
+				else if(board[rr][i].pid == 0){
 					ctx.beginPath();
 					ctx.rect(50*i,50*rr,50,50);
 					ctx.fillStyle = "red";
@@ -33,4 +33,4 @@ function renderer(board,gnor,gnoc){
 	}
 }
 
-module.exports = renderer;
+// module.exports = renderer;

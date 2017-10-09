@@ -7,6 +7,33 @@ app.get('/', function(req, res) {
 });
 
 
+app.get( '/*' , function( req, res, next ) {
+
+		//This is the current file they have requested
+	var file = req.params[0];
+
+		//For debugging, we can track what files are requested.
+	if(true) {
+		console.log('\t :: Express :: file requested : ' + file);
+		//console.log('\t__dirname = ' + __dirname + ';;full path given = ' + __dirname + '/' + file);
+	}
+
+		//Send the requesting client the file.
+	res.sendfile( __dirname + '/' + file );
+
+});
+
+io.configure(function (){
+
+	io.set('log level', 0);
+
+	io.set('authorization', function (handshakeData, callback) {
+	  callback(null, true); // error first callback style
+	});
+
+});
+
+
 var list_of_games=[];
 var game = require('./gc');
 
@@ -47,7 +74,7 @@ io.on('connection', function(socket) {
 				var new_new_daata = data;
 				new_new_daata.noOfPlayers = g1.get_max_nop();
 				socket.emit('join_success', new_new_daata);
-				if(g1.full){
+				if(g1.get_full()){
 					g1.start_start();
 				}
 			}

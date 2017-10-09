@@ -5,12 +5,14 @@
 	</head>
 
 	<script src = "/socket.io/socket.io.js"></script>
-	<script type="text/javascript" src="renderer.js"></script>
-	<script type="text/javascript" src="gc.js"></script>
+	<script src="/renderer.js"></script>
+	<script src="/gc.js"></script>
+	<script src="/grid.js"></script>
 	<script>
 		var my_game_core = new gc(0);
 
 		var socket = my_game_core.get_socket();
+		console.log(socket);
 
 		function Join() {
 			socket.emit('setPlayerID', document.getElementById('PlayerID').value);
@@ -36,7 +38,7 @@
 			document.getElementById('error-container').innerHTML = data;
 		});
 
-		socket.on('join_success', client_onconnected);
+		socket.on('join_success', my_game_core.client_onconnected);
 
 		socket.on('settingPlayerID', function(data){
 			game_ID = document.getElementById('GameID').value;
@@ -70,5 +72,6 @@
 		<button type = "button" name = "button" onclick = "Join()">
 			Connect!!
 		</button>
+		<canvas id="myCanvas" width="720" height="480" style="border:1px solid #d3d3d3;">
 	</body>
 </html>
