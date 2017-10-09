@@ -11,7 +11,7 @@ function gc(gid, nop = 2, isServer = false){
 	var update_switch = undefined;
 	var interval = 100; // time after which kallar is called;
 	var self = this;
-	started = false;
+	var started = false;
 	var game_ID = gid;
 
 	console.log("game_ID set to ", game_ID, "\tgid is ", gid);
@@ -31,6 +31,21 @@ function gc(gid, nop = 2, isServer = false){
 		return full;
 	}
 
+	this.get_current_nop = function(){
+		return current_nop;
+	}
+
+	this.get_server_player_obj_list = function(){
+		return server_player_obj_list;
+	}
+
+	this.get_update_switch = function(){
+		return update_switch;
+	}
+
+	this.get_started = function(){
+		return started;
+	}
 	this.server_add_player = function(player){
 		console.log("server_add_player called");	
 		// here player is the socket obj and it contains pid
