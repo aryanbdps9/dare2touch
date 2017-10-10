@@ -667,6 +667,10 @@ function Grid(nora, noca){
 	this.stop_game = function(){
 		should_update = false;
 	}
+
+	this.is_game_over = function(){
+		
+	}
 }
 
 if(typeof exports == 'undefined'){

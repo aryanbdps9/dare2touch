@@ -17,18 +17,7 @@
 		function Join() {
 			socket.emit('setPlayerID', document.getElementById('PlayerID').value);
 		};
-		socket.on('s_add_player', function(data) {
-			var playerID = document.getElementById('PlayerID').value;
-			document.body.innerHTML='';
-			document.body.innerHTML+='(<b>'+playerID+'</b>) is connected to the game with GameID <b>' + my_game_core.get_gameID() + '</b>';
-			my_game_core.client_add_player(data);
-		});
-		socket.on('create_new_game', function(data) {
-			var playerID = document.getElementById('PlayerID').value;
-			var x = data.GameID;
-			document.body.innerHTML='';
-			document.body.innerHTML+='HOST (<b>'+playerID+'</b>) is connected to the game with GameID <b>' + x + '</b>';
-		});
+		
 
 		socket.on('GameIDExists', function(data) {
 			document.getElementById('error-container').innerHTML = data;
@@ -41,6 +30,7 @@
 		socket.on('join_success', my_game_core.client_onconnected);
 
 		socket.on('settingPlayerID', function(data){
+			console.log("caught setPlayerID");
 			game_ID = document.getElementById('GameID').value;
 			no_OfPlayers = document.getElementById('NoOfPlayers').value;
 			socket.emit('setGameID', {gameID:game_ID, playerID:data, noOfPlayers:no_OfPlayers});
