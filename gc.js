@@ -7,11 +7,13 @@ var gc = function(gid, nop = 2, isServer = false){
 	this.grid = undefined;
 	if (isServer){
 		var grid_require = require('./grid');
-		grid = new grid_require(this.nor, this.noc);
+		this.grid = new grid_require(this.nor, this.noc);
+		console.log("grid created.");
+		// console.log(grid);
 	}
 
 	else{
-		grid = new Grid(this.nor, this.noc);
+		this.grid = new Grid(this.nor, this.noc);
 	}
 	this.isServer = isServer;
 	this.full = false;
@@ -19,7 +21,7 @@ var gc = function(gid, nop = 2, isServer = false){
 	this.max_nop = nop;
 	this.server_player_obj_list = [];
 	this.update_switch = undefined;
-	this.interval = 100; // time after which kallar is called;
+	this.interval = 1000; // time after which kallar is called;
 	this.self = this;
 	this.started = false;
 	this.game_ID = gid;
@@ -81,6 +83,14 @@ gc.prototype.get_max_nop = function(){
 	return this.max_nop;
 };
 
+gc.prototype.get_isServer = function(){
+	return this.isServer;
+};
+
+gc.prototype.get_grid = function(){
+	return this.grid;
+};
+
 gc.prototype.get_nor = function(){
 	return this.nor;
 };
@@ -135,39 +145,53 @@ gc.prototype.server_add_player = function(player){
 	console.log("current_nop:" , this.current_nop, "\tmax_nop:", this.max_nop, "\tfull=", this.full);
 };
 
-gc.prototype.client_add_player = function(pid){
+/*gc.prototype.client_add_player = function(pid){
 	this.grid.add_player(pid);
-};
+};*/
 
 gc.prototype.start_start = function(){
 	this.server_player_obj_list.forEach(function(p){
 		p.emit('starting_game');
 	});
-	setTimeout(this.start_updating, 3000);
+	console.log("this is:", this);
+	var self=this;
+	setTimeout(function(){self.start_updating(self);}, 3000);
 };
 
 	
 
-	// this.client_count_display = function(){
+gc.prototype.client_count_display = function(){
 
-	// }
+}
 // }
 
 
-gc.prototype.start_updating = function(){
+gc.prototype.start_updating = function(self){
 	console.log("start_updating called");
-	if (this.isServer){
-		this.server_player_obj_list.forEach(function(p){
+	//var self = self;
+	//console.log("this of su: ", this);
+	console.log("self is:", self);
+	// console.log("interval: ", this.interval);
+	if (self.isServer){
+		console.log("server part being called");
+		console.log(self.get_isServer());
+		self.server_player_obj_list.forEach(function(p){
 			p.emit('game_start');
-			this.update_switch = setInterval(this.kallar, this.interval);
+			self.update_switch = setInterval(function(){self.kallar(self);}, self.interval);
 		});
-		this.update_switch = setInterval(this.kallar, this.interval);
-		this.started = true;
+		//var self = this;
+		// this.update_switch = setInterval(this.kallar, this.interval);
+		self.update_switch = setInterval(function(){self.kallar(self);}, self.interval);
+		self.started = true;
 	}
 	else{
-		this.update_switch = setInterval(this.kallar, this.interval);
-		this.started = true;
+		console.log("client part being called");
+		console.log(self.get_isServer());
+		//var self=this;
+		self.update_switch = setInterval(function(){self.kallar(self);}, self.interval);
+		self.started = true;
 	}
+	console.log("end of start_updating");
 };
 
 
@@ -213,20 +237,26 @@ gc.prototype.client_handle_input = function(){
 
 
 
-gc.prototype.kallar = function(){
+gc.prototype.kallar = function(self){
+
 	console.log("kallar was called");
-	if (!isServer){
-		renderer (grid, nor, noc);
-		c_inp = this.client_handle_input(); // c_input is of
+	// console.log("this: ", this);
+	console.log("self: ", self);
+	//console.log("this.isServer: ", self.get_isServer);
+	//console.log("self.isServer: ", self.get_isServer);
+	if (!self.get_isServer){
+		renderer (self.grid, self.nor, self.noc);
+		console.log(self.isServer)
+		var c_inp = self.client_handle_input(); // c_input is of
 		if (c_inp.pressed){
 			//i.e. input was pressed
-			this.socket.send(c_inp.data_string);
-			this.add_sequence(input_data_parser(c_inp.data_string));
+			self.socket.send(c_inp.data_string);
+			self.add_sequence(input_data_parser(c_inp.data_string));
 		}
 	}
-	grid.update();
-	if (isServer){
-		if (grid.is_game_over()){
+	self.grid.update();
+	if (self.isServer){
+		if (self.grid.is_game_over()){
 			server_player_obj_list.forEach(function(p){
 				p.emit('game_over');
 			});
@@ -237,7 +267,7 @@ gc.prototype.kallar = function(){
 
 
 gc.prototype.client_kill_player = function(pida){
-	grid.remove_player(pida);
+	this.grid.remove_player(pida);
 };
 
 
@@ -249,17 +279,17 @@ gc.prototype.client_ondisconnect = function(){
 	this.grid.stop_game();
 };
 
-
-gc.prototype.client_onconnected = function(data){
-	var myid = data.playerID;
+// gc.prototype.client_onconnected = function(data){
+/*gc.prototype.client_onconnected = function(){
 	// if (data.nop){
 	// 	this.max_nop = nop;
 	// }
+	var myid = data.playerID;
 	this.max_nop = data.noOfPlayers;
 	this.myid = myid;
 	this.client_add_player(this.myid);
 };
-
+*/
 gc.prototype.get_socket = function(){
 	console.log("socket inside get_socket in gc:");
 	console.log(this.socket);
@@ -267,17 +297,27 @@ gc.prototype.get_socket = function(){
 };
 
 gc.prototype.config_connection = function(){
+	var self=this;
 	this.socket = io.connect();
 	console.log("socket inside gc:");
-	console.log(socket);
+	console.log(this.socket);
 	this.socket.on('disconnect', this.client_ondisconnect); //
 
 	//Handle when we connect to the server, showing state and storing id's.
-	this.socket.on('onconnected', this.client_onconnected);//
+	this.socket.on('onconnected', function(data){
+		var myid = data.playerID;
+		this.max_nop = data.noOfPlayers;
+		this.myid = myid;
+		this.client_add_player(this.myid);
+	});//
 	//On error we just show that we are not connected for now. Can print the data.
 	this.socket.on('error', this.client_ondisconnect);
-	// this.socket.on('s_add_player', this.client_add_player); //
-	this.socket.on('game_start', this.start_updating); //
+	this.socket.on('s_add_player', function(pid){
+		self.grid.add_player(pid);
+	}); //
+	this.socket.on('game_start', function(){
+		self.start_updating(self);
+	}); //
 	this.socket.on('move', this.client_handle_move); //
 	this.socket.on('game_over', this.client_game_over); //
 	this.socket.on('killit', this.client_kill_player); 

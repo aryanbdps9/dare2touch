@@ -23,7 +23,7 @@ app.get( '/*' , function( req, res, next ) {
 
 });
 
-io.configure(function (){
+/*io.configure(function (){
 
 	io.set('log level', 0);
 
@@ -31,7 +31,7 @@ io.configure(function (){
 	  callback(null, true); // error first callback style
 	});
 
-});
+});*/
 
 
 var list_of_games=[];
