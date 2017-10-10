@@ -27,7 +27,7 @@
 			document.getElementById('error-container').innerHTML = data;
 		});
 
-		socket.on('join_success', my_game_core.client_onconnected);
+		// socket.on('join_success', my_game_core.client_onconnected);
 
 		socket.on('settingPlayerID', function(data){
 			console.log("caught setPlayerID");
