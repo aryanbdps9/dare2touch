@@ -6,7 +6,7 @@ function renderer(board,gnor,gnoc){
 	var ctx = canvas.getContext("2d");
 	for (var rr = 0; rr < gnor; rr++){
 		for (var i = 0; i < gnoc; i++){
-			if(board[rr][i] == undefined){
+			if(board[rr][i] === undefined){
 				ctx.beginPath();
 				ctx.rect(50*i,50*rr,50,50);
 				ctx.fillStyle = "grey";

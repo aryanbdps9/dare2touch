@@ -21,7 +21,7 @@ var gc = function(gid, nop = 2, isServer = false){
 	this.max_nop = nop;
 	this.server_player_obj_list = [];
 	this.update_switch = undefined;
-	this.interval = 1000; // time after which kallar is called;
+	this.interval = 10000000; // time after which kallar is called;
 	this.self = this;
 	this.started = false;
 	this.game_ID = gid;
@@ -204,6 +204,13 @@ gc.prototype.add_sequence = function(seq){
 	}
 };
 
+gc.prototype.client_onconnected = function(data){
+	var myid = data.playerID;
+	this.max_nop = data.noOfPlayers;
+	this.myid = myid;
+	this.client_add_player(this.myid);
+}
+
 gc.prototype.client_handle_move = function(data){
 	// data will be of following format:
 	// str(update_no-pid-x-y) // str means string
@@ -244,9 +251,10 @@ gc.prototype.kallar = function(self){
 	console.log("self: ", self);
 	//console.log("this.isServer: ", self.get_isServer);
 	//console.log("self.isServer: ", self.get_isServer);
-	if (!self.get_isServer){
-		renderer (self.grid, self.nor, self.noc);
-		console.log(self.isServer)
+	if (!self.isServer){
+		renderer (self.grid.get_board(), self.nor, self.noc);
+		console.log("client kallar is called");
+		console.log(self.isServer);
 		var c_inp = self.client_handle_input(); // c_input is of
 		if (c_inp.pressed){
 			//i.e. input was pressed
@@ -294,12 +302,12 @@ gc.prototype.config_connection = function(){
 	this.socket.on('disconnect', this.client_ondisconnect); //
 
 	//Handle when we connect to the server, showing state and storing id's.
-	this.socket.on('onconnected', function(data){
+	/*this.socket.on('onconnected', function(data){
 		var myid = data.playerID;
 		this.max_nop = data.noOfPlayers;
 		this.myid = myid;
 		this.client_add_player(this.myid);
-	});//
+	});//*/
 	//On error we just show that we are not connected for now. Can print the data.
 	this.socket.on('error', this.client_ondisconnect);
 	this.socket.on('s_add_player', function(pid){

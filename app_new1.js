@@ -23,7 +23,7 @@ app.get( '/*' , function( req, res, next ) {
 
 });
 
-io.configure(function (){
+/*io.configure(function (){
 
 	io.set('log level', 0);
 
@@ -31,23 +31,24 @@ io.configure(function (){
 	  callback(null, true); // error first callback style
 	});
 
-});
+});*/
 
 
 var list_of_games=[];
 var game = require('./gc');
 
 get_owner_by_gid = function(gid){
-	console.log("get_owner_by_gid called");
+	//console.log("get_owner_by_gid called");
 	var temp = list_of_games.length;
+	//console.log("list of games:", list_of_games);
 		for (var i = 0; i < temp; i++){
 			if (list_of_games[i].get_gameID() == gid){
+				//console.log("game:",list_of_games[i]);
 				return list_of_games[i];
-				//console.log(list_of_games[i]);
 			}
 			else {
-				//console.log(list_of_games[i].get_gameID());
-				//console.log(list_of_games[i].game_ID, gid);
+				//console.log("Game_ID is:",list_of_games[i].get_gameID());
+				//console.log("gid is", gid);
 			}
 		}
 	}
@@ -64,9 +65,12 @@ io.on('connection', function(socket) {
 		PlayerID = data.playerID;
 		NoOfPlayers = data.noOfPlayers;
 		var g1 = get_owner_by_gid(Game_ID);
+		var indx = list_of_games.indexOf(g1);
+		//console.log("index is:",indx);
 		if(list_of_games.indexOf(g1) > -1){
+			//console.log("full is",g1.get_full());
 			if(g1.get_full()){
-				socket.emit('GameIDExists.','The game with GameID '+ g1.game_ID+ ' is full. Try after sometime!!');
+				socket.emit('GameIDExists','The game with GameID '+ Game_ID + ' is full. Try after sometime!!');
 			}
 			else{
 				socket.pid=PlayerID;
@@ -82,11 +86,15 @@ io.on('connection', function(socket) {
 		}
 		else {
 			var g1 = new game(Game_ID, NoOfPlayers, true);
+			console.log("new game created");
 			list_of_games.push(g1);
 			socket.pid=PlayerID;
 			g1.server_add_player(socket);
 			socket.game_instance=g1;
 			socket.emit('join_success', data);
+			if(g1.get_full()){
+					g1.start_start();
+				}
 		}
 	});
 	
