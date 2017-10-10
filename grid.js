@@ -251,7 +251,7 @@ function Grid(nora, noca){
 		var cppiniposi = [];
 		// return ini_list_pid_and_pnts;
 		var cpplen = ini_list_pid_and_pnts.length;
-		if (cpplen == 1){
+		/*if (cpplen == 1){
 			cppy.push(Math.floor(grid_num_col/2));
 			cppx.push(Math.floor(grid_num_row / 2));
 			cppdiri.push([-1, 0]);
@@ -265,7 +265,15 @@ function Grid(nora, noca){
 			cppdiri.push([0, -1]);
 			cppiniposi.push([cppx[0], cppy[0]]);
 			cppiniposi.push([cppx[0], cppy[1]]);
+		}*/
+			cppx.push(Math.floor(grid_num_row / 2));
+		for (var j=0; j<cpplen; j++){
+			var y= Math.floor((2*j+1)*grid_num_col/(cpplen*2))
+			cppy.push(y);
+			cppdiri.push([-1, 0]);
+			cppiniposi.push([cppx[0], y]);
 		}
+
 		for(var i = 0; i < cpplen; ++i){
 			console.log("caspa i = " + i + "\n");
 			self.create_and_set_player_at(ini_list_pid_and_pnts[i][0], cppiniposi[i], cppdiri[i]);

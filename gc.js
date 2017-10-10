@@ -22,9 +22,9 @@ var gc = function(gid, nop = 2, isServer = false){
 	this.max_nop = nop;
 	this.server_player_obj_list = [];
 	this.update_switch = undefined;
-	this.interval = 10000000; // time after which kallar is called;
+	this.interval = 1000; // time after which kallar is called;
 	this.self = this;
-	this.started = false;
+	this.started = true;
 	this.game_ID = gid;
 
 	console.log("game_ID set to ", this.game_ID, "\tgid is ", gid);
@@ -42,7 +42,7 @@ var gc = function(gid, nop = 2, isServer = false){
 
 	if (!isServer){
 		if (this.started){
-			document.addEventListener('keydown', function(event){
+			document.addEventListener("keydown", function(event){
 				if (this.started){
 					var pressed = false;
 					var temp_seq = "";
@@ -140,6 +140,7 @@ gc.prototype.server_add_player = function(player){
 	});
 	this.grid.add_player(player.pid);
 	this.server_player_obj_list.push(player);
+	//console.log("player list is", this.server_player_obj_list);
 	this.current_nop++;
 	if (this.current_nop == this.max_nop){
 		this.full = true;
@@ -255,22 +256,16 @@ gc.prototype.kallar = function(self){
 	console.log("self: ", self);
 	//console.log("this.isServer: ", self.get_isServer);
 	//console.log("self.isServer: ", self.get_isServer);
-<<<<<<< HEAD
-	if (!self.isServer){
-		renderer (self.grid.get_board(), self.nor, self.noc);
-		console.log("client kallar is called");
-		console.log(self.isServer);
-=======
 	console.log("board:");
 	
 	if (!self.get_isServer()){
 		console.log("will call renderer");
-		
-		renderer (self.grid.get_board(), self.nor, self.noc);
+		console.log("player list is:", );
+		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_alive_players());
 		console.log("called renderer");
 		console.log(self.isServer);
 		console.log(self.grid.get_board());
->>>>>>> f40301df3c18340fcfdf4d7b9bcdabe97c9bbf9f
+
 		var c_inp = self.client_handle_input(); // c_input is of
 		if (c_inp.pressed){
 			//i.e. input was pressed
@@ -282,7 +277,7 @@ gc.prototype.kallar = function(self){
 	if (self.isServer){
 		// console.log(self.grid.print_grid());
 		if (self.grid.is_game_over()){
-			server_player_obj_list.forEach(function(p){
+			self.server_player_obj_list.forEach(function(p){
 				p.emit('game_over');
 			});
 		}
@@ -326,21 +321,6 @@ gc.prototype.config_connection = function(){
 	this.socket.on('disconnect', this.client_ondisconnect); //
 
 	//Handle when we connect to the server, showing state and storing id's.
-<<<<<<< HEAD
-	/*this.socket.on('onconnected', function(data){
-		var myid = data.playerID;
-		this.max_nop = data.noOfPlayers;
-		this.myid = myid;
-		this.client_add_player(this.myid);
-	});//*/
-=======
-	// this.socket.on('onconnected', function(data){
-	// 	var myid = data.playerID;
-	// 	this.max_nop = data.noOfPlayers;
-	// 	this.myid = myid;
-	// 	this.client_add_player(this.myid);
-	// });//
->>>>>>> f40301df3c18340fcfdf4d7b9bcdabe97c9bbf9f
 	//On error we just show that we are not connected for now. Can print the data.
 	this.socket.on('error', this.client_ondisconnect);
 	this.socket.on('s_add_player', function(pid){
