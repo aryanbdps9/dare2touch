@@ -279,17 +279,7 @@ gc.prototype.client_ondisconnect = function(){
 	this.grid.stop_game();
 };
 
-// gc.prototype.client_onconnected = function(data){
-/*gc.prototype.client_onconnected = function(){
-	// if (data.nop){
-	// 	this.max_nop = nop;
-	// }
-	var myid = data.playerID;
-	this.max_nop = data.noOfPlayers;
-	this.myid = myid;
-	this.client_add_player(this.myid);
-};
-*/
+
 gc.prototype.get_socket = function(){
 	console.log("socket inside get_socket in gc:");
 	console.log(this.socket);
