@@ -182,6 +182,9 @@ function Grid(nora, noca){
 		}
 
 		while(seq_of_unprocessed_moves.length > 0){
+			if (seq_of_unprocessed_moves[0][0] > actual_current_up_no){
+				break;
+			}
 			if (seq_of_unprocessed_moves.length > 1) current_update_number = seq_of_unprocessed_moves[1][0];
 			else{
 				current_update_number = actual_current_up_no;

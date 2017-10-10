@@ -22,7 +22,7 @@ var gc = function(gid, nop = 2, isServer = false){
 	this.max_nop = nop;
 	this.server_player_obj_list = [];
 	this.update_switch = undefined;
-	this.interval = 1000; // time after which kallar is called;
+	this.interval = 100; // time after which kallar is called;
 	this.self = this;
 	this.started = false;
 	this.game_ID = gid;
@@ -265,7 +265,7 @@ gc.prototype.kallar = function(self){
 	
 	if (!self.get_isServer()){
 		console.log("will call renderer");
-		console.log("player list is:", );
+		console.log("player list is:");
 		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_alive_players());
 		console.log("called renderer");
 		console.log(self.isServer);
