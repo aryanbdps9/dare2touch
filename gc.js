@@ -265,7 +265,7 @@ gc.prototype.kallar = function(self){
 	
 	if (!self.get_isServer()){
 		console.log("will call renderer");
-		console.log("player list is:", );
+		console.log("player list is:");
 		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_alive_players());
 		console.log("called renderer");
 		console.log(self.isServer);
