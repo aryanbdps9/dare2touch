@@ -74,6 +74,7 @@ io.on('connection', function(socket) {
 			}
 			else{
 				socket.pid=PlayerID;
+				socket.emit('joined');
 				g1.server_add_player(socket);
 				socket.game_instance=g1;
 				var new_new_daata = data;
@@ -89,6 +90,7 @@ io.on('connection', function(socket) {
 			console.log("new game created");
 			list_of_games.push(g1);
 			socket.pid=PlayerID;
+			socket.emit('joined');
 			g1.server_add_player(socket);
 			socket.game_instance=g1;
 			socket.emit('join_success', data);
@@ -107,6 +109,11 @@ io.on('connection', function(socket) {
 			console.log("will now emit setPlayerID");
 			socket.emit('settingPlayerID', data);
 		}
+	});
+
+	socket.on('message', function(data){
+		socket.game_instance.input_handle(data);
+		console.log("message detected");
 	});
 	/*socket.on('msg', function(data) {
 		io.sockets.in("room-"+roomno).emit('newmsg', data);

@@ -2,7 +2,7 @@ var gc = function(gid, nop = 2, isServer = false){
 	console.log("new gc created");
 	// var grid = new grid_require(480, 720);
 	// this.nor = 480, this.noc = 720;
-	this.nor = 75, this.noc = 75;
+	this.nor = 100, this.noc = 100;
 	// var grid_require = require('./grid');
 	// var grid = new grid_require('nor, noc');
 	this.grid = undefined;
@@ -24,7 +24,7 @@ var gc = function(gid, nop = 2, isServer = false){
 	this.update_switch = undefined;
 	this.interval = 1000; // time after which kallar is called;
 	this.self = this;
-	this.started = true;
+	this.started = false;
 	this.game_ID = gid;
 
 	console.log("game_ID set to ", this.game_ID, "\tgid is ", gid);
@@ -33,17 +33,18 @@ var gc = function(gid, nop = 2, isServer = false){
 
 
 
-	if (!isServer){
+	if (!this.isServer){
 		this.myid;
 		this.client_last_input_string = '';
 		this.config_connection();
 	}
 
 
-	if (!isServer){
-		if (this.started){
-			document.addEventListener("keydown", function(event){
-				if (this.started){
+	if (!this.isServer){
+			console.log("keyboard !!!!!!!!!!");
+			var seld = this;
+			window.addEventListener("keydown", function(event){
+				if (seld.started){
 					var pressed = false;
 					var temp_seq = "";
 					var keyNm = event.keyCode || event.which;
@@ -57,7 +58,7 @@ var gc = function(gid, nop = 2, isServer = false){
 						temp_seq = "-1#0";
 						pressed = true;
 					}
-					else if (keyNm == 37 || keyNm == 68){
+					else if (keyNm == 39 || keyNm == 68){
 						//right
 						temp_seq = "0#1";
 						pressed = true;
@@ -67,13 +68,14 @@ var gc = function(gid, nop = 2, isServer = false){
 						temp_seq = "1#0";
 						pressed = true;
 					}
-					temp_seq = grid.get_actual_up_no().toString() + "#" + this.myid.toString() + "#" + temp_seq;
+					temp_seq = seld.grid.get_actual_up_no().toString() + "#" + seld.myid.toString() + "#" + temp_seq;
+					console.log("my id is:", seld.myid);
 					if (pressed){
-						this.client_last_input_string = temp_seq;
+						seld.client_last_input_string = temp_seq;
 					}
 				}
 			});
-		}
+		
 	}
 
 
@@ -156,7 +158,7 @@ gc.prototype.start_start = function(){
 	this.server_player_obj_list.forEach(function(p){
 		p.emit('starting_game');
 	});
-	console.log("this is:", this);
+	//console.log("this is:", this);
 	var self=this;
 	setTimeout(function(){self.start_updating(self);}, 3000);
 };
@@ -173,7 +175,7 @@ gc.prototype.start_updating = function(self){
 	console.log("start_updating called");
 	//var self = self;
 	//console.log("this of su: ", this);
-	console.log("self is:", self);
+	//console.log("self is:", self);
 	// console.log("interval: ", this.interval);
 	if (self.isServer){
 		console.log("server part being called");
@@ -200,30 +202,21 @@ gc.prototype.start_updating = function(self){
 };
 
 
-gc.prototype.add_sequence = function(seq){
-	this.grid.add_sequence(seq);
-	if (this.isServer){
-		server_player_obj_list.forEach(function(p){
-			p.emit('move', {pid:p.pid, dirn:dirn});
+gc.prototype.add_sequence = function(seq, self){
+	if (self.isServer){
+		self.server_player_obj_list.forEach(function(p){
+			p.emit('move', seq);
 		});
 	}
+	else self.grid.add_sequence(seq);
 };
 
-gc.prototype.client_onconnected = function(data){
+/*gc.prototype.client_onconnected = function(data){
 	var myid = data.playerID;
 	this.max_nop = data.noOfPlayers;
 	this.myid = myid;
 	this.client_add_player(this.myid);
-}
-
-gc.prototype.client_handle_move = function(data){
-	// data will be of following format:
-	// str(update_no-pid-x-y) // str means string
-	var temp_list = this.input_data_parser(data);
-	this.add_sequence(temp_list);
-	// type_casted_temp_list = undefined;
-};
-
+}*/
 
 gc.prototype.input_data_parser = function(inp_string){
 	var temp_list = inp_string.split("#");
@@ -233,6 +226,14 @@ gc.prototype.input_data_parser = function(inp_string){
 	temp_dir_list = undefined;
 	return type_casted_temp_list;
 };
+
+/*gc.prototype.client_handle_move = function(self, data){
+	// data will be of following format:
+	// str(update_no-pid-x-y) // str means string
+	var temp_list = self.input_data_parser(data);
+	self.grid.add_sequence(data);
+	// type_casted_temp_list = undefined;
+};*/
 
 
 gc.prototype.client_handle_input = function(){
@@ -246,17 +247,21 @@ gc.prototype.client_handle_input = function(){
 	else return {pressed:false, data_string:""};
 };
 
-
+gc.prototype.input_handle = function(data){
+	var temp_list = this.input_data_parser(data);
+	this.add_sequence(temp_list, this);
+	
+}
 
 
 gc.prototype.kallar = function(self){
 
 	console.log("kallar was called");
 	// console.log("this: ", this);
-	console.log("self: ", self);
+	//console.log("self: ", self);
 	//console.log("this.isServer: ", self.get_isServer);
 	//console.log("self.isServer: ", self.get_isServer);
-	console.log("board:");
+	//console.log("board:");
 	
 	if (!self.get_isServer()){
 		console.log("will call renderer");
@@ -270,7 +275,7 @@ gc.prototype.kallar = function(self){
 		if (c_inp.pressed){
 			//i.e. input was pressed
 			self.socket.send(c_inp.data_string);
-			self.add_sequence(input_data_parser(c_inp.data_string));
+			self.add_sequence(self.input_data_parser(c_inp.data_string), self);
 		}
 	}
 	self.grid.update();
@@ -301,8 +306,8 @@ gc.prototype.client_ondisconnect = function(){
 
 
 gc.prototype.get_socket = function(){
-	console.log("socket inside get_socket in gc:");
-	console.log(this.socket);
+	//console.log("socket inside get_socket in gc:");
+	//console.log(this.socket);
 	return this.socket;
 };
 
@@ -316,8 +321,8 @@ gc.prototype.client_onconnected  = function(self, data){
 gc.prototype.config_connection = function(){
 	var self=this;
 	this.socket = io.connect();
-	console.log("socket inside gc:");
-	console.log(this.socket);
+	//console.log("socket inside gc:");
+	//console.log(this.socket);
 	this.socket.on('disconnect', this.client_ondisconnect); //
 
 	//Handle when we connect to the server, showing state and storing id's.
@@ -330,7 +335,7 @@ gc.prototype.config_connection = function(){
 		self.start_updating(self);
 	}); //
 	this.socket.on('join_success', function(data){self.client_onconnected(self, data);});
-	this.socket.on('move', this.client_handle_move); //
+	this.socket.on('move', function(data){self.grid.add_sequence(data, self);}); //
 	this.socket.on('game_over', this.client_game_over); //
 	this.socket.on('killit', this.client_kill_player); 
 	this.socket.on('starting_game', this.client_count_display);
