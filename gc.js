@@ -22,10 +22,11 @@ var gc = function(gid, nop = 2, isServer = false){
 	this.max_nop = nop;
 	this.server_player_obj_list = [];
 	this.update_switch = undefined;
-	this.interval = 100; // time after which kallar is called;
+	this.interval = 1000; // time after which kallar is called;
 	this.self = this;
 	this.started = false;
 	this.game_ID = gid;
+	this.cutoff = 5;
 
 	console.log("game_ID set to ", this.game_ID, "\tgid is ", gid);
 
@@ -77,8 +78,6 @@ var gc = function(gid, nop = 2, isServer = false){
 			});
 		
 	}
-
-
 
 };
 
@@ -247,9 +246,21 @@ gc.prototype.client_handle_input = function(){
 	else return {pressed:false, data_string:""};
 };
 
-gc.prototype.input_handle = function(data){
+gc.prototype.server_input_handle = function(data, player){
+	// console.log("input_handle, player: ");
+	// console.log(player);
 	var temp_list = this.input_data_parser(data);
-	this.add_sequence(temp_list, this);
+	var request_u_n = temp_list[0];
+	var current_un = this.grid.get_actual_up_no();
+	var lo_lim = (current_un - this.cutoff)>=0 ? (current_un - this.cutoff) : 0;
+	var up_lim = (current_un + this.cutoff);
+	if ((request_u_n >= lo_lim) && (request_u_n <= up_lim)){
+		this.add_sequence(temp_list, this);
+		player.emit('accepted_inp_seq', request_u_n);
+	}
+	else{
+		player.emit('rejected', request_u_n);
+	}
 	
 }
 
@@ -289,7 +300,12 @@ gc.prototype.kallar = function(self){
 	}
 };
 
-
+gc.prototype.client_remove_seq = function(up_no){
+	console.log("entered client_remove_seq");
+	if (!this.isServer){
+		this.grid.remove_seq(up_no, this.myid);
+	}
+}
 
 gc.prototype.client_kill_player = function(pida){
 	this.grid.remove_player(pida);
@@ -339,6 +355,8 @@ gc.prototype.config_connection = function(){
 	this.socket.on('game_over', this.client_game_over); //
 	this.socket.on('killit', this.client_kill_player); 
 	this.socket.on('starting_game', this.client_count_display);
+	this.socket.on('rejected', this.client_remove_seq);
+	this.socket.on('accepted_inp_seq', console.log('yaay! seq accepted'));
 };
 
 

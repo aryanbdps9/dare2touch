@@ -2,7 +2,8 @@ function gplayer(){
 	this.the_id = undefined;
 	this.inipos = undefined;
 	this.finalpos = undefined;
-	this.finaldir = undefined; 
+	this.finaldir = undefined;
+	this.inidir = undefined;
 	this.last_killed = Infinity;
 	this.trace = []; // {update_no_personal, pos[], direction}
 	this.pnts = 0;
@@ -53,6 +54,54 @@ function Grid(nora, noca){
 		should_update = true;
 	}
 
+	this.remove_seq = function(temp_un, pno){
+		should_update = false;
+
+		var i = self.finder(temp_un, seq_of_moves, 0);
+		if (i != seq_of_moves.length){
+			var temp_p = self.get_owner_by_pid(pno);
+			var temp_p_trace = temp_p.trace;
+
+
+			for (var ii = temp_p_trace.length - 1; ii >= 0; --ii){
+				if (temp_p_trace[ii][0] == temp_un){
+					// console.log("changing trace of player: ", pno, "this is old trace^");
+					if (ii == 0){
+						temp_p_trace[ii][2] = temp_p.inidir;
+					}
+					else{
+						temp_p_trace[ii][2] = temp_p_trace[ii-1][2];
+					}
+					// console.log("i was: ", i, "this is new trace:");
+					// console.log(temp_p_trace);
+					break;
+				}
+				else{
+					// console.log("temp_p_trace[i][0] = ", temp_p_trace[i][0], "; temp_un = ", temp_un);
+				}
+			}
+
+
+			temp_array = seq_of_moves.splice(i, seq_of_moves.length - i);
+			temp_array.shift(); // removing the undesired sequence
+			seq_of_unprocessed_moves.splice.apply(seq_of_unprocessed_moves, [0, 0].concat(temp_array));
+			should_update = true;
+			return;
+		}
+		else{
+			i = self.finder(una, seq_of_unprocessed_moves, 0);
+			if (i == seq_of_unprocessed_moves.length){
+				should_update = true;
+				return;
+			}
+			else{
+				seq_of_unprocessed_moves.splice(i, 1);
+				should_update = true;
+				return;
+			}
+		}
+	}
+
 	this.add_sequence = function(seq){
 		should_update = false;
 		var i = self.finder(seq[0], seq_of_moves, 0);
@@ -61,13 +110,12 @@ function Grid(nora, noca){
 			if (seq_of_unprocessed_moves.length > 0){
 				var j = self.finder(seq[0], seq_of_unprocessed_moves, 0);
 				seq_of_unprocessed_moves.splice(j, 0, seq);
-				should_update = true;
+				
 				// return;
 			}
 			else{
 				console.log('directly pushed');
 				seq_of_unprocessed_moves.push(seq);
-				should_update = true;
 				// return;
 			}
 			var pno = seq[1];
@@ -87,6 +135,7 @@ function Grid(nora, noca){
 					// console.log("temp_p_trace[i][0] = ", temp_p_trace[i][0], "; temp_un = ", temp_un);
 				}
 			}
+			should_update = true;
 			return;
 		}
 		else{
@@ -291,6 +340,7 @@ function Grid(nora, noca){
 		babyGplayer.inipos = inipos;
 		babyGplayer.finalpos = inipos;
 		babyGplayer.finaldir = dir;
+		babyGplayer.inidir = dir;
 		babyGplayer.trace.push([0, inipos, dir]);
 		//adding it to list of current players;
 		current_gplayers.push(babyGplayer);

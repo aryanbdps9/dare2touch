@@ -112,7 +112,8 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on('message', function(data){
-		socket.game_instance.input_handle(data);
+		// console.log("app::: socket: ", socket);
+		socket.game_instance.server_input_handle(data, socket);
 		console.log("message detected");
 	});
 	/*socket.on('msg', function(data) {
