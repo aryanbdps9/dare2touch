@@ -33,6 +33,11 @@ function Grid(nora, noca){
 
 	var initialized = false;
 
+	this.get_last_move = function(pid){
+		var temp_plar = self.get_owner_by_pid(pid).trace;
+		return temp_plar[temp_plar.length - 1][2];
+	}
+
 	this.add_player = function(pid){
 		var present = false;
 		for (var i = 0; i < ini_list_pid_and_pnts.length; i++){
