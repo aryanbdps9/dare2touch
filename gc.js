@@ -1,4 +1,4 @@
-	var gc = function(gid, nop = 2, isServer = false){
+var gc = function(gid, nop = 2, isServer = false){
 	console.log("new gc created");
 	// var grid = new grid_require(480, 720);
 	// this.nor = 480, this.noc = 720;
