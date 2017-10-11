@@ -496,6 +496,8 @@ function Grid(nora, noca){
 				//kill(p);
 				console.log("is_out_of_range! newpos = ");
 				console.log(newpos + "\tplayerid = "+ p.the_id+ "\n");
+				console.log("total row is ", grid_num_row);
+				console.log("total column is ", grid_num_col);
 				// console
 				kill_list.push(p);
 			}

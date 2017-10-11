@@ -22,7 +22,7 @@ var gc = function(gid, nop = 2, isServer = false){
 	this.max_nop = nop;
 	this.server_player_obj_list = [];
 	this.update_switch = undefined;
-	this.interval = 1000; // time after which kallar is called;
+	this.interval = 300; // time after which kallar is called;
 	this.self = this;
 	this.started = false;
 	this.game_ID = gid;
@@ -203,11 +203,15 @@ gc.prototype.start_updating = function(self){
 
 gc.prototype.add_sequence = function(seq, self){
 	if (self.isServer){
+		console.log("adding sequence in server");
 		self.server_player_obj_list.forEach(function(p){
 			p.emit('move', seq);
 		});
 	}
-	else self.grid.add_sequence(seq);
+	else {
+		self.grid.add_sequence(seq);
+		console.log("adding sequence in client");
+	}
 };
 
 /*gc.prototype.client_onconnected = function(data){
@@ -254,13 +258,13 @@ gc.prototype.server_input_handle = function(data, player){
 	var current_un = this.grid.get_actual_up_no();
 	var lo_lim = (current_un - this.cutoff)>=0 ? (current_un - this.cutoff) : 0;
 	var up_lim = (current_un + this.cutoff);
-	if ((request_u_n >= lo_lim) && (request_u_n <= up_lim)){
+	//if ((request_u_n >= lo_lim) && (request_u_n <= up_lim)){
 		this.add_sequence(temp_list, this);
 		player.emit('accepted_inp_seq', request_u_n);
-	}
-	else{
-		player.emit('rejected', request_u_n);
-	}
+	//}
+	//else{
+	//	player.emit('rejected', request_u_n);
+	//}
 	
 }
 
@@ -268,6 +272,12 @@ gc.prototype.server_input_handle = function(data, player){
 gc.prototype.kallar = function(self){
 
 	console.log("kallar was called");
+	console.log("alive players", self.grid.get_alive_players());
+	if (self.grid.get_alive_players() == []){
+		clearInterval(self.update_switch);
+		console.log("update_switch is not working", self.update_switch);
+		self.grid.should_update=false;
+	}
 	// console.log("this: ", this);
 	//console.log("self: ", self);
 	//console.log("this.isServer: ", self.get_isServer);
@@ -276,7 +286,7 @@ gc.prototype.kallar = function(self){
 	
 	if (!self.get_isServer()){
 		console.log("will call renderer");
-		console.log("player list is:");
+		//console.log("player list is:");
 		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts());
 		console.log("called renderer");
 		console.log(self.isServer);
@@ -290,6 +300,7 @@ gc.prototype.kallar = function(self){
 		}
 	}
 	self.grid.update();
+	
 	if (self.isServer){
 		// console.log(self.grid.print_grid());
 		if (self.grid.is_game_over()){
@@ -314,7 +325,7 @@ gc.prototype.client_kill_player = function(pida){
 
 gc.prototype.client_ondisconnect = function(){
 	if (this.update_switch != undefined){
-		clearInterval(update_switch);
+		clearInterval(this.update_switch);
 		this.update_switch = undefined;
 	}
 	this.grid.stop_game();
