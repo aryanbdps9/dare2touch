@@ -45,10 +45,14 @@ var gc = function(gid, nop = 2, isServer = false){
 			console.log("keyboard !!!!!!!!!!");
 			var seld = this;
 			window.addEventListener("keydown", function(event){
+				var keyNm = event.keyCode || event.which;
+				if ([37, 38, 39, 40, 65, 68, 83, 87].indexOf(keyNm) > -1){
+					event.preventDefault();
+				}
 				if (seld.started){
 					var pressed = false;
 					var temp_seq = "";
-					var keyNm = event.keyCode || event.which;
+					
 					if (keyNm == 37 || keyNm == 65){
 						//left
 						temp_seq = "0#-1";
@@ -291,12 +295,19 @@ gc.prototype.kallar = function(self){
 		console.log("called renderer");
 		console.log(self.isServer);
 		console.log(self.grid.get_board());
-
+		console.log("my id is: ", self.myid);
 		var c_inp = self.client_handle_input(); // c_input is of
 		if (c_inp.pressed){
 			//i.e. input was pressed
-			self.socket.send(c_inp.data_string);
-			self.add_sequence(self.input_data_parser(c_inp.data_string), self);
+			var baby_inp = self.input_data_parser(c_inp.data_string);
+			var last_p_dir = self.grid.get_last_move(baby_inp[1]);
+			if (Math.abs(last_p_dir[0]) != Math.abs(baby_inp[2][0]) || Math.abs(baby_inp[2][1]) != Math.abs(last_p_dir[1])){
+				self.socket.send(c_inp.data_string);
+				self.add_sequence(self.input_data_parser(c_inp.data_string), self);
+			}
+			else{
+				console.log("input was ignored");
+			}
 		}
 	}
 	self.grid.update();
