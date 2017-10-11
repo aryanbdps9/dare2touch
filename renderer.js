@@ -8,7 +8,7 @@ function renderer(board,gnor,gnoc,list_of_players){
 	var ctx = canvas.getContext("2d");
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
-	var side = Math.min(window.innerWidth/100,window.innerHeight/100);
+	var side = Math.min(window.innerWidth/200,window.innerHeight/100);
 	for (var rr = 0; rr < gnor; rr++){
 		for (var i = 0; i < gnoc; i++){
 			if(board[rr][i] === undefined){

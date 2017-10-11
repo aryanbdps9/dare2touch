@@ -2,7 +2,7 @@ var gc = function(gid, nop = 2, isServer = false){
 	console.log("new gc created");
 	// var grid = new grid_require(480, 720);
 	// this.nor = 480, this.noc = 720;
-	this.nor = 100, this.noc = 100;
+	this.nor = 100, this.noc = 200;
 	// var grid_require = require('./grid');
 	// var grid = new grid_require('nor, noc');
 	this.grid = undefined;
