@@ -1,4 +1,4 @@
-var gc = function(gid, nop = 2, isServer = false){
+	var gc = function(gid, nop = 2, isServer = false){
 	console.log("new gc created");
 	// var grid = new grid_require(480, 720);
 	// this.nor = 480, this.noc = 720;
@@ -277,7 +277,7 @@ gc.prototype.kallar = function(self){
 	if (!self.get_isServer()){
 		console.log("will call renderer");
 		console.log("player list is:");
-		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_alive_players());
+		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts());
 		console.log("called renderer");
 		console.log(self.isServer);
 		console.log(self.grid.get_board());

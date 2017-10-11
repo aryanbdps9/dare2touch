@@ -18,7 +18,7 @@ function renderer(board,gnor,gnoc,list_of_players){
 			}
 			else{
 				for (var j=list_of_players.length-1; j>=0; j--){
-					if(board[rr][i].pid == list_of_players[j].the_id){
+					if(board[rr][i].pid == list_of_players[j][0]){
 						ctx.beginPath();
 						ctx.rect(side*i,side*rr, side, side);
 						ctx.fillStyle = list_of_colors[j];
