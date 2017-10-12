@@ -108,6 +108,7 @@ function Grid(nora, noca){
 	}
 
 	this.add_sequence = function(seq){
+		console.log("add sequence was called")
 		should_update = false;
 		var i = self.finder(seq[0], seq_of_moves, 0);
 		if (i == seq_of_moves.length){
@@ -221,18 +222,18 @@ function Grid(nora, noca){
 			// console.log(a1); // [1, 2, 21, 22, 3, 4, 5];
 			// moving all elem from i onwards into the beginning of seq_of_unprocessed_moves
 			console.log("######################");
-			console.log("seq_om:", seq_of_moves);
-			console.log("seq_oum:", seq_of_unprocessed_moves);
+			// console.log("seq_om:", seq_of_moves);
+			// console.log("seq_oum:", seq_of_unprocessed_moves);
 			console.log("shifting all elems with indices >= ", i, " from seq_om to seq_oum");
 			temp_array = seq_of_moves.splice(i, seq_of_moves.length - i);
 			seq_of_unprocessed_moves.splice.apply(seq_of_unprocessed_moves, [0, 0].concat(temp_array));
-			console.log("seq_om:", seq_of_moves);
-			console.log("seq_oum:", seq_of_unprocessed_moves);
-			console.log("######################");
+			// console.log("seq_om:", seq_of_moves);
+			// console.log("seq_oum:", seq_of_unprocessed_moves);
+			// console.log("######################");
 		}
 		else {
-			console.log("len of seq_om = ", seq_of_moves.length, "; result of finder = ", i)
-			console.log("seq_om: ", seq_of_moves)
+			// console.log("len of seq_om = ", seq_of_moves.length, "; result of finder = ", i)
+			// console.log("seq_om: ", seq_of_moves)
 		}
 
 		while(seq_of_unprocessed_moves.length > 0){

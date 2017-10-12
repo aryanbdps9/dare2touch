@@ -22,7 +22,7 @@ var gc = function(gid, nop = 2, isServer = false){
 	this.max_nop = nop;
 	this.server_player_obj_list = [];
 	this.update_switch = undefined;
-	this.interval = 300; // time after which kallar is called;
+	this.interval = 100; // time after which kallar is called;
 	this.self = this;
 	this.started = false;
 	this.game_ID = gid;
@@ -211,6 +211,7 @@ gc.prototype.add_sequence = function(seq, self){
 		self.server_player_obj_list.forEach(function(p){
 			p.emit('move', seq);
 		});
+		self.grid.add_sequence(seq);
 	}
 	else {
 		self.grid.add_sequence(seq);
@@ -255,7 +256,7 @@ gc.prototype.client_handle_input = function(){
 };
 
 gc.prototype.server_input_handle = function(data, player){
-	// console.log("input_handle, player: ");
+	console.log("input_handle, player: ");
 	// console.log(player);
 	var temp_list = this.input_data_parser(data);
 	var request_u_n = temp_list[0];
