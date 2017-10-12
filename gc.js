@@ -276,8 +276,8 @@ gc.prototype.server_input_handle = function(data, player){
 gc.prototype.kallar = function(self){
 
 	console.log("kallar was called");
-	console.log("alive players", self.grid.get_alive_players());
-	if (self.grid.get_alive_players() == []){
+	// console.log("alive players", self.grid.get_alive_players());
+	if (self.grid.get_alive_players().length == 0){
 		clearInterval(self.update_switch);
 		console.log("update_switch is not working", self.update_switch);
 		self.grid.should_update=false;
