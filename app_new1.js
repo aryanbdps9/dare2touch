@@ -55,14 +55,17 @@ get_owner_by_gid = function(gid){
 
 var list_of_playerID = [];
 var roomno = 0;
+//var user;
 io.on('connection', function(socket) {
 	console.log('New user connected');
+	var user;
 	//if(io.nsps['/'].adapter.rooms["room-"+roomno] && io.nsps['/'].adapter.rooms["room-"+roomno].length > noofplayers-1) roomno++;
 	
 		socket.on('setGameID', function(data) {
 		console.log("caught setGameID");
 		Game_ID = data.gameID;
 		PlayerID = data.playerID;
+		user = PlayerID;
 		NoOfPlayers = data.noOfPlayers;
 		var g1 = get_owner_by_gid(Game_ID);
 		var indx = list_of_games.indexOf(g1);
@@ -70,11 +73,12 @@ io.on('connection', function(socket) {
 		if(list_of_games.indexOf(g1) > -1){
 			//console.log("full is",g1.get_full());
 			if(g1.get_full()){
+				var inddd = list_of_playerID.indexOf(user);
+				list_of_playerID.splice(inddd, 1);
 				socket.emit('GameIDExists','The game with GameID '+ Game_ID + ' is full. Try after sometime!!');
 			}
 			else{
 				socket.pid=PlayerID;
-				socket.emit('joined');
 				g1.server_add_player(socket);
 				socket.game_instance=g1;
 				var new_new_daata = data;
@@ -90,7 +94,6 @@ io.on('connection', function(socket) {
 			console.log("new game created");
 			list_of_games.push(g1);
 			socket.pid=PlayerID;
-			socket.emit('joined');
 			g1.server_add_player(socket);
 			socket.game_instance=g1;
 			socket.emit('join_success', data);
@@ -99,14 +102,13 @@ io.on('connection', function(socket) {
 				}
 		}
 	});
-	
 
 	socket.on('setPlayerID', function(data){
 		if(list_of_playerID.indexOf(data) > -1) {
-			socket.emit('PlayerIDExists', 'PlayerID ' + data + ' already exists! Try another PlayerID');
+			socket.emit('PlayerIDExists',data);
 		} else {
 			list_of_playerID.push(data);
-			console.log("will now emit setPlayerID");
+			console.log("will now emit setPlayerID", data);
 			socket.emit('settingPlayerID', data);
 		}
 	});
@@ -116,6 +118,7 @@ io.on('connection', function(socket) {
 		socket.game_instance.server_input_handle(data, socket);
 		console.log("message detected");
 	});
+
 	/*socket.on('msg', function(data) {
 		io.sockets.in("room-"+roomno).emit('newmsg', data);
 	});
@@ -124,12 +127,22 @@ io.on('connection', function(socket) {
 		for (var i = 0; i < users[roomno-1].length - 1; i++) {
 		socket.emit('oldmsg1', users[roomno-1][i]);
 		}
-	});
+	});*/
+	/*socket.on('disconnect', function(){
+		console.log("disconnectinggggggggggggggggggggggggggggggg");
+		socket.emit('disconnecting');
+	});*/
+
 
 	socket.on('disconnect', function(){
-		console.log(user + ' is disconnected');
-		socket.leave("room-"+roomno);
-	});*/
+		console.log("disconnecting");
+		if(user!=undefined){
+		console.log(user, ' is disconnected');
+		var inddd = list_of_playerID.indexOf(user);
+		list_of_playerID.splice(inddd, 1);
+		console.log(user, " is removed");
+	}
+	});
 });
 
 http.listen(3000, function() {

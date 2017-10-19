@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Server</title>
+		<title>DARE2TOUCH</title>
+		<link rel="stylesheet" type="text/css" href="index_style.css">
 	</head>
 
 	<script src = "/socket.io/socket.io.js"></script>
@@ -10,55 +11,79 @@
 	<script src="/grid.js"></script>
 	<script>
 		var my_game_core = new gc(0);
-
 		var socket = my_game_core.get_socket();
 		console.log(socket);
 
+
 		function Join() {
-			socket.emit('setPlayerID', document.getElementById('PlayerID').value);
+			Player=document.getElementById('PlayerID').value;
+			password=document.getElementById('password').value;
+			if(Player==""){document.getElementById('username-error-container').innerHTML ='Please fill in the Username';}
+			if(password==""){document.getElementById('password-error-container').innerHTML ='Please fill in the Password';}
+			else if (password!="password"){document.getElementById('password-error-container').innerHTML ='Wrong Password';}
+			else socket.emit('setPlayerID', Player);
 		};
 		
+		function Play_With_Friends(){
+			//Player=document.getElementById('PlayerID').value;
+			game_ID = document.getElementById('GameID').value;
+			no_OfPlayers = document.getElementById('NoOfPlayers').value;
+			socket.emit('setGameID', {gameID:game_ID, playerID:Player, noOfPlayers:no_OfPlayers});		
+		}
 
 		socket.on('GameIDExists', function(data) {
 			document.getElementById('error-container').innerHTML = data;
 		});
 
 		socket.on('PlayerIDExists', function(data) {
-			document.getElementById('error-container').innerHTML = data;
+			document.getElementById('username-error-container').innerHTML ='Username <b>'+ data + '</b> already exists. Please try another username.';
 		});
 
 		// socket.on('join_success', my_game_core.client_onconnected);
 
 		socket.on('settingPlayerID', function(data){
 			console.log("caught setPlayerID");
-			game_ID = document.getElementById('GameID').value;
-			no_OfPlayers = document.getElementById('NoOfPlayers').value;
-			socket.emit('setGameID', {gameID:game_ID, playerID:data, noOfPlayers:no_OfPlayers});
-
+			game_id_area();
+			//game_play_area();
 		});
 
-		socket.on('joined',function(){
-			document.getElementById('error-container').innerHTML = 'Successfully Joined!!!';
-		})
-
-		
-
-		
-		/*socket.on('newmsg', function(data){
-			if(user) {document.body.innerHTML += '<b>' + data +'</b> is connected <br>';}
+		socket.on('players_connecting', function(list_of_players){
+			document.body.innerHTML ='<b>'+ Player + '</b>(You) is Connected<br>';
+			len = list_of_players.length;
+			for(var i=0 ; i<len; i++){
+				if(list_of_players[i][0]!=Player){
+					document.body.innerHTML +='<b>'+list_of_players[i][0]+ '</b> is Connected<br>';
+				}
+			}
+		});
+		socket.on('display_canvas', function(){
+			game_play_area();
 		});
 
+		function game_id_area(){
+			document.body.innerHTML = '<div id="everything" class="container"></div>';
+			//document.getElementById('imgcontainer').innerHTML = '';
+			document.getElementById('everything').innerHTML = '<center>'+
+			'<label><b>Game ID</b></label>&emsp;'+
+			'<input id = "GameID" type = "text" name = "GameID" value = "" placeholder = "Enter GameID" class="game">'+
+			'<label><b>No. of Players</b></label>&emsp;'+
+			'<input id = "NoOfPlayers" type = "text" name = "NoOfPlayers" value = "" placeholder = "Enter the No. of Players" class="game"><br>'+
+			'<button type="submit" onclick="Play_With_Friends()" class="play1_button">Play With Friends</button><br><br>'+
+			'<button type="submit" onclick="" class="play_button">Play With Computer</button>'+
+			'<button type="submit" onclick="" class="play_button">Play In Random Arena</button>'+
+			'</center>';
+		}
 
-		socket.on('oldmsg1', function(data){
-			document.body.innerHTML += '<b>' + data +'</b> is connected <br>';
-		});*/
-	
+		function game_play_area(){
+			document.body.innerHTML = '<canvas id="myCanvas" style="border:1px solid #d3d3d3;" width="859" height="678"></canvas>';
+		}
+
+		
 		
 	</script>
 	
 	<body>
-		<div id = "error-container"></div>
-		<input id = "PlayerID" type = "text" name = "PlayerID" value = "" 
+		<!--input id = "PlayerID" type = "text" name = "PlayerID" value = "" 
 			placeholder = "Enter Username!">
 		<input id = "GameID" type = "text" name = "GameID" value = "" 
 			placeholder = "Enter GameID!">
@@ -66,7 +91,26 @@
 			placeholder = "Enter the No. of Players!">
 		<button type = "button" name = "button" onclick = "Join()">
 			Connect!!
-		</button><br>
-		<canvas id="myCanvas" style="border:1px solid #d3d3d3;"></canvas>
+		</button><br> -->
+		<!-- <div id = "Form">
+			
+		</div> -->
+		  <div id="imgcontainer" class="imgcontainer">
+		    <img src="dare2touch.png" alt="Dare2Touch" class="Dare2Touch">
+		  </div>
+
+		  <div id="everything" class="container">
+		  	<center>
+			    <label><b>Username</b></label>&emsp;
+			    <input id = "PlayerID" type="text" placeholder="Enter Username" name="PlayerID"><br>
+				<div id = "username-error-container" class="error"></div>
+			    <label><b>Password </b></label>&emsp;
+			    <input id="password" type="password" placeholder="Enter Password" name="password"><br>
+			    <div id = "password-error-container" class="error"></div>
+			    <input type="checkbox" checked=""> Remember me
+			    <button type="submit" onclick="Join()">Login</button><br>
+		    </center>
+		  </div>
+		<!-- <canvas id="myCanvas" style="border:1px solid #d3d3d3;"></canvas> -->
 	</body>
 </html>

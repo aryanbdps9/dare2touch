@@ -41,9 +41,19 @@ var gc = function(gid, nop = 2, isServer = false){
 	}
 
 
+	
+
+};
+
+gc.prototype.get_max_nop = function(){
+	return this.max_nop;
+};
+
+gc.prototype.add_keyboard = function(){
 	if (!this.isServer){
-			console.log("keyboard !!!!!!!!!!");
 			var seld = this;
+			console.log("started is", this.started);
+			if(this.started){
 			window.addEventListener("keydown", function(event){
 				var keyNm = event.keyCode || event.which;
 				if ([37, 38, 39, 40, 65, 68, 83, 87].indexOf(keyNm) > -1){
@@ -80,14 +90,10 @@ var gc = function(gid, nop = 2, isServer = false){
 					}
 				}
 			});
+		}
 		
 	}
-
-};
-
-gc.prototype.get_max_nop = function(){
-	return this.max_nop;
-};
+}
 
 gc.prototype.get_isServer = function(){
 	return this.isServer;
@@ -135,6 +141,7 @@ gc.prototype.get_started = function(){
 	return this.started;
 };
 gc.prototype.server_add_player = function(player){
+	var self =this;
 	console.log("server_add_player called");	
 	// here player is the socket obj and it contains pid
 	this.server_player_obj_list.forEach(function(p){
@@ -143,9 +150,15 @@ gc.prototype.server_add_player = function(player){
 	this.server_player_obj_list.forEach(function(p){
 		player.emit('s_add_player', p.pid);
 	});
-	this.grid.add_player(player.pid);
+	//this.grid.add_player(player.pid);
 	this.server_player_obj_list.push(player);
 	//console.log("player list is", this.server_player_obj_list);
+	this.server_player_obj_list.forEach(function(p){
+		console.log("players are", self.grid.get_ini_list_pid_and_pnts());
+		console.log("players_connecting called");
+		p.emit('players_connecting', self.grid.get_ini_list_pid_and_pnts());
+	});
+
 	this.current_nop++;
 	if (this.current_nop == this.max_nop){
 		this.full = true;
@@ -159,6 +172,7 @@ gc.prototype.client_add_player = function(pid){
 
 gc.prototype.start_start = function(){
 	this.server_player_obj_list.forEach(function(p){
+		p.emit('display_canvas');
 		p.emit('starting_game');
 	});
 	//console.log("this is:", this);
@@ -168,8 +182,11 @@ gc.prototype.start_start = function(){
 
 	
 
-gc.prototype.client_count_display = function(){
-
+gc.prototype.client_count_display = function(self){
+	self.grid.make_ready_for_update();
+	setTimeout(function(){renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), 3);}, 000);
+	setTimeout(function(){renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), 2);}, 1000);
+	setTimeout(function(){renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), 1);}, 2000);
 }
 // }
 
@@ -183,24 +200,27 @@ gc.prototype.start_updating = function(self){
 	if (self.isServer){
 		console.log("server part being called");
 		console.log(self.get_isServer());
+		//self.grid.make_ready_for_update();
 		self.server_player_obj_list.forEach(function(p){
 			p.emit('game_start');
 			// self.update_switch = setInterval(function(){self.kallar(self);}, self.interval);
 		});
-		self.grid.make_ready_for_update();
+		
 		//var self = this;
 		// this.update_switch = setInterval(this.kallar, this.interval);
-		self.update_switch = setInterval(function(){self.kallar(self);}, self.interval);
+		//self.update_switch = setInterval(function(){self.kallar(self);}, self.interval);
 		self.started = true;
+		//self.add_keyboard();
 	}
 	else{
 		console.log("client part being called");
 		console.log(self.get_isServer());
 		//var self=this;
-		self.grid.make_ready_for_update();
-		self.update_switch = setInterval(function(){self.kallar(self);}, self.interval);
+		//self.update_switch = setInterval(function(){self.kallar(self);}, self.interval);
 		self.started = true;
+		self.add_keyboard();
 	}
+	self.kallar(self);
 	console.log("end of start_updating");
 };
 
@@ -211,7 +231,7 @@ gc.prototype.add_sequence = function(seq, self){
 		self.server_player_obj_list.forEach(function(p){
 			p.emit('move', seq);
 		});
-		self.grid.add_sequence(seq);
+		//self.grid.add_sequence(seq);
 	}
 	else {
 		self.grid.add_sequence(seq);
@@ -228,7 +248,7 @@ gc.prototype.add_sequence = function(seq, self){
 
 gc.prototype.input_data_parser = function(inp_string){
 	var temp_list = inp_string.split("#");
-	var type_casted_temp_list = [parseInt(temp_list[0]), parseInt(temp_list[1])];
+	var type_casted_temp_list = [parseInt(temp_list[0]), temp_list[1]];
 	var temp_dir_list = [parseInt(temp_list[2]), parseInt(temp_list[3])];
 	type_casted_temp_list.push(temp_dir_list);
 	temp_dir_list = undefined;
@@ -292,7 +312,7 @@ gc.prototype.kallar = function(self){
 	if (!self.get_isServer()){
 		console.log("will call renderer");
 		//console.log("player list is:");
-		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts());
+		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), 0);
 		console.log("called renderer");
 		console.log(self.isServer);
 		console.log(self.grid.get_board());
@@ -310,17 +330,19 @@ gc.prototype.kallar = function(self){
 				console.log("input was ignored");
 			}
 		}
+		self.grid.update();
 	}
-	self.grid.update();
 	
 	if (self.isServer){
 		// console.log(self.grid.print_grid());
-		if (self.grid.is_game_over()){
-			self.server_player_obj_list.forEach(function(p){
-				p.emit('game_over');
-			});
-		}
+		// if (self.grid.is_game_over()){
+		// 	self.server_player_obj_list.forEach(function(p){
+		// 		p.emit('game_over');
+		// 	});
+		// }
 	}
+	setTimeout(function(){self.kallar(self);}, self.interval);
+
 };
 
 gc.prototype.client_remove_seq = function(up_no){
@@ -335,12 +357,13 @@ gc.prototype.client_kill_player = function(pida){
 };
 
 
-gc.prototype.client_ondisconnect = function(){
-	if (this.update_switch != undefined){
-		clearInterval(this.update_switch);
-		this.update_switch = undefined;
+gc.prototype.client_ondisconnect = function(self){
+	if (self.update_switch != undefined){
+		clearInterval(self.update_switch);
+		self.update_switch = undefined;
 	}
-	this.grid.stop_game();
+	self.socket.emit('remove',self.myid);
+	//self.grid.stop_game();
 };
 
 
@@ -362,7 +385,13 @@ gc.prototype.config_connection = function(){
 	this.socket = io.connect();
 	//console.log("socket inside gc:");
 	//console.log(this.socket);
-	this.socket.on('disconnect', this.client_ondisconnect); //
+	this.socket.on('connection', function(){
+		console.log("user is being connected");
+	})
+	this.socket.on('disconnect', function(){ 
+		self.socket.emit('remove', self.myid);
+		//self.client_ondisconnect(self);
+	});
 
 	//Handle when we connect to the server, showing state and storing id's.
 	//On error we just show that we are not connected for now. Can print the data.
@@ -374,12 +403,14 @@ gc.prototype.config_connection = function(){
 		self.start_updating(self);
 	}); //
 	this.socket.on('join_success', function(data){self.client_onconnected(self, data);});
-	this.socket.on('move', function(data){self.grid.add_sequence(data, self);}); //
+	this.socket.on('move', function(data){
+	if(data[1]!= self.myid){self.grid.add_sequence(data, self);}
+	}); //
 	this.socket.on('game_over', this.client_game_over); //
 	this.socket.on('killit', this.client_kill_player); 
-	this.socket.on('starting_game', this.client_count_display);
+	this.socket.on('starting_game', function(){self.client_count_display(self);});
 	this.socket.on('rejected', this.client_remove_seq);
-	this.socket.on('accepted_inp_seq', console.log('yaay! seq accepted'));
+	this.socket.on('accepted_inp_seq', function(){console.log('yaay! seq accepted');});
 };
 
 
