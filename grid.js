@@ -108,7 +108,7 @@ function Grid(nora, noca){
 	}
 
 	this.add_sequence = function(seq){
-		console.log("add sequence was called");
+		console.log("add sequence was called")
 		should_update = false;
 		var i = self.finder(seq[0], seq_of_moves, 0);
 		if (i == seq_of_moves.length){
@@ -207,7 +207,6 @@ function Grid(nora, noca){
 			return 10;
 		}
 		// else:
-		console.log("actual_current_up_no is ", actual_current_up_no);
 		actual_current_up_no++;
 		var update_update_number = current_update_number;
 		if (seq_of_unprocessed_moves.length > 0){
