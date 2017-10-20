@@ -20,10 +20,19 @@
 			password=document.getElementById('password').value;
 			if(Player==""){document.getElementById('username-error-container').innerHTML ='Please fill in the Username';}
 			if(password==""){document.getElementById('password-error-container').innerHTML ='Please fill in the Password';}
-			else if (password!="password"){document.getElementById('password-error-container').innerHTML ='Wrong Password';}
-			else socket.emit('setPlayerID', Player);
+			// else if (password!="password"){document.getElementById('password-error-container').innerHTML ='Wrong Password';}
+			else socket.emit('setPlayerID', {username: Player, pswd: password});
 		};
 		
+		function Signup(){
+			newUser = document.getElementById('PlayerID').value;
+			password=document.getElementById('password').value;
+			if(newUser==""){document.getElementById('username-error-container').innerHTML ='Please fill in the Username';}
+			if(password==""){document.getElementById('password-error-container').innerHTML ='Please fill in the Password';}
+			// else if (password!="password"){document.getElementById('password-error-container').innerHTML ='Wrong Password';}
+			else socket.emit('create_player', {username: newUser, pswd: password});
+		}
+
 		function Play_With_Friends(){
 			//Player=document.getElementById('PlayerID').value;
 			game_ID = document.getElementById('GameID').value;
@@ -39,6 +48,14 @@
 			document.getElementById('username-error-container').innerHTML ='Username <b>'+ data + '</b> already exists. Please try another username.';
 		});
 
+		socket.on('do_login', function(){
+			document.getElementById('username-error-container').innerHTML = 'Please login';
+		});
+
+		socket.on('re_enter_credentials', function() {
+			document.getElementById('username-error-container').innerHTML ='Wrong credentials<br>\n';
+			console.log("We sent wrong credentials");
+		});
 		// socket.on('join_success', my_game_core.client_onconnected);
 
 		socket.on('settingPlayerID', function(data){
@@ -109,6 +126,7 @@
 			    <div id = "password-error-container" class="error"></div>
 			    <input type="checkbox" checked=""> Remember me
 			    <button type="submit" onclick="Join()">Login</button><br>
+			    <button type="submit" onclick="Signup()"> Login</button><br>
 		    </center>
 		  </div>
 		<!-- <canvas id="myCanvas" style="border:1px solid #d3d3d3;"></canvas> -->
