@@ -115,10 +115,17 @@ io.on('connection', function(socket) {
 
 	socket.on('message', function(data){
 		// console.log("app::: socket: ", socket);
+		start1 = new Date();
 		socket.game_instance.server_input_handle(data, socket);
 		console.log("message detected");
 	});
 
+
+	socket.on('endtime', function(){
+		end1 = new Date();
+		timediff = end1 - start1;
+		console.log(" time difference is ", timediff);
+	});
 	/*socket.on('msg', function(data) {
 		io.sockets.in("room-"+roomno).emit('newmsg', data);
 	});

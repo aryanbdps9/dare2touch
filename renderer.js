@@ -67,7 +67,7 @@ function renderer(board,gnor,gnoc,list_of_players,starting){
 	}
 	var endTime = new Date();
 	var timeDiff = endTime - startTime;
-	console.log("time taken is", timeDiff);
+	//console.log("time taken is", timeDiff);
 }
 
 // module.exports = renderer;

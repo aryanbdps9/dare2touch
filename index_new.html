@@ -20,7 +20,7 @@
 			password=document.getElementById('password').value;
 			if(Player==""){document.getElementById('username-error-container').innerHTML ='Please fill in the Username';}
 			if(password==""){document.getElementById('password-error-container').innerHTML ='Please fill in the Password';}
-			else if (password!="password"){document.getElementById('password-error-container').innerHTML ='Wrong Password';}
+			else if (password!="q"){document.getElementById('password-error-container').innerHTML ='Wrong Password';}
 			else socket.emit('setPlayerID', Player);
 		};
 		
@@ -47,15 +47,14 @@
 			//game_play_area();
 		});
 
-		socket.on('players_connecting', function(list_of_players){
-			document.body.innerHTML ='<b>'+ Player + '</b>(You) is Connected<br>';
-			len = list_of_players.length;
-			for(var i=0 ; i<len; i++){
-				if(list_of_players[i][0]!=Player){
-					document.body.innerHTML +='<b>'+list_of_players[i][0]+ '</b> is Connected<br>';
-				}
+		socket.on('print_player', function(data){
+			//document.getElementById('everything').innerHTML = '';
+			if (data == Player){
+				document.body.innerHTML ='<b>'+ Player + '</b>(You) is Connected<br>';
 			}
+			else {document.body.innerHTML +='<b>'+data+ '</b> is Connected<br>';}
 		});
+
 		socket.on('display_canvas', function(){
 			game_play_area();
 		});
@@ -78,8 +77,16 @@
 			document.body.innerHTML = '<canvas id="myCanvas" style="border:1px solid #d3d3d3;" width="859" height="678"></canvas>';
 		}
 
+		socket.on('starting_time', function(data){
+			start1=data;
+		});
 		
-		
+		socket.on('ending_time', function(data){
+			end1=data;
+			timediff = end1- start1;
+			console.log("time diff is", timediff);
+		});
+
 	</script>
 	
 	<body>
