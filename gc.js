@@ -27,6 +27,7 @@ var gc = function(gid, nop = 2, isServer = false){
 	this.started = false;
 	this.game_ID = gid;
 	this.cutoff = 5;
+	this.total_messages=0;
 
 	console.log("game_ID set to ", this.game_ID, "\tgid is ", gid);
 
@@ -303,14 +304,10 @@ gc.prototype.server_input_handle = function(data, player){
 
 
 gc.prototype.kallar = function(self){
-
+	console.log("#####################################################");
 	//console.log("kallar was called");
 	// console.log("alive players", self.grid.get_alive_players());
-	if (self.grid.get_alive_players().length == 0){
-		clearInterval(self.update_switch);
-		console.log("update_switch is not working", self.update_switch);
-		self.grid.should_update=false;
-	}
+
 	// console.log("this: ", this);
 	//console.log("self: ", self);
 	//console.log("this.isServer: ", self.get_isServer);
@@ -345,20 +342,39 @@ gc.prototype.kallar = function(self){
 	var endTime = new Date();
 	var time = endTime - startTime;
 	get_up_no=Math.floor(time/actual_interval);
-	//console.log("get_up_no is ", get_up_no);
+	console.log("get_up_no is ", get_up_no);
 	gap_interval = time - (get_up_no*actual_interval);
 	curr_interval=actual_interval - gap_interval;
 	act_up_no = self.grid.get_actual_up_no();
-	//console.log("act_up_no is ", act_up_no);
+	console.log("act_up_no is ", act_up_no);
 	for(i = act_up_no; i <= get_up_no; i++ ){
 		self.grid.update();
 	}
 	end_time=new Date();
 	time_Diff= end_time- start_time;
 	console.log("time taken is ", time_Diff);
-	setTimeout(function(){self.kallar(self);}, curr_interval);
+	if (self.grid.get_alive_players().length == 0){
+		clearInterval(self.update_switch);
+		console.log("update_switch is not working", self.update_switch);
+		self.grid.should_update=false;
+	}
+	else setTimeout(function(){self.kallar(self);}, curr_interval);
+	console.log("total messages are ",self.total_messages);
+	self.grid.get_alive_players().forEach(function(p){
+			console.log("position of ", p.the_id, " is ", p.finalpos);
+			console.log("direction of ", p.the_id, " is ", p.finaldir);
+		});
 
 };
+
+
+gc.prototype.mover =function(seq, self){
+	self.total_messages++;
+	if(seq[1]!= self.myid){
+		self.grid.add_sequence(seq, self);
+		//self.socket.emit('endtime');
+		}
+}
 
 gc.prototype.client_remove_seq = function(up_no){
 	console.log("entered client_remove_seq");
@@ -419,10 +435,7 @@ gc.prototype.config_connection = function(){
 	}); //
 	this.socket.on('join_success', function(data){self.client_onconnected(self, data);});
 	this.socket.on('move', function(data){
-	if(data[1]!= self.myid){
-		self.grid.add_sequence(data, self);
-		self.socket.emit('endtime');
-		}
+		self.mover(data, self);
 	}); //
 	this.socket.on('game_over', this.client_game_over); //
 	this.socket.on('killit', this.client_kill_player); 

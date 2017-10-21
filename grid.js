@@ -56,6 +56,11 @@ function Grid(nora, noca){
 
 	this.make_ready_for_update = function(){
 		self.initialize_players();
+		console.log("No. of rows are ", grid_num_row);
+		console.log("No. of cols are ", grid_num_col);
+		current_gplayers.forEach(function(p){
+			console.log("position of ", p.the_id, " is ", p.inipos);
+		});
 		should_update = true;
 	}
 
@@ -108,7 +113,7 @@ function Grid(nora, noca){
 	}
 
 	this.add_sequence = function(seq){
-		console.log("add sequence was called")
+		console.log("add sequence was called with input ", seq);
 		should_update = false;
 		var i = self.finder(seq[0], seq_of_moves, 0);
 		if (i == seq_of_moves.length){
@@ -199,6 +204,7 @@ function Grid(nora, noca){
 	}
 
 	this.update = function(){
+		console.log("update of grid was called !!!!!!!!!!!!!!!");
 		// returning 0 means false, 1 means true, and 10 means game over
 		if (!should_update){
 			return 0;
@@ -237,10 +243,12 @@ function Grid(nora, noca){
 		}
 
 		while(seq_of_unprocessed_moves.length > 0){
-			if (seq_of_unprocessed_moves[0][0] > actual_current_up_no){
+			if (seq_of_unprocessed_moves[0][0] >= actual_current_up_no){
+				console.log("skipping future request");
 				break;
 			}
-			if (seq_of_unprocessed_moves.length > 1) current_update_number = seq_of_unprocessed_moves[1][0];
+			if (seq_of_unprocessed_moves.length > 1 && seq_of_unprocessed_moves[1][0] <= actual_current_up_no) 
+				{current_update_number = seq_of_unprocessed_moves[1][0];}
 			else{
 				current_update_number = actual_current_up_no;
 			}
@@ -251,7 +259,7 @@ function Grid(nora, noca){
 			}
 		}
 
-		if (actual_current_up_no != current_update_number){
+		if (actual_current_up_no >= current_update_number){
 			console.log("diff exists b/w act_un and cur_um");
 			cur_n = current_update_number;
 			current_update_number = actual_current_up_no;
@@ -369,6 +377,7 @@ function Grid(nora, noca){
 	}
 
 	this.respawn_dead = function(from_this_time){
+		console.log("respawn was called");
 		var birth_list = [];
 		killed_gplayers.forEach(function(p){
 			if (p.last_killed >= from_this_time){
@@ -484,6 +493,9 @@ function Grid(nora, noca){
 
 	this.oracle_extrapolate = function(from_this_no){
 		var cnt = from_this_no;
+		if (cnt >= current_update_number){
+			console.log("skipping move. cnt = ", cnt, " current_update_number = ", current_update_number);
+		}
 		while (cnt < current_update_number){
 			self.move(cnt);
 			//remove_killed_from_board(); done in kill only
