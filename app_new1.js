@@ -11,11 +11,6 @@ var con = mysql.createConnection({
 	user: 'root',
 	password: 'kentenben11',
 	database: 'Pro1'
-	// $dbhost = 'localhost'; //
-	// $dbuser = 'root';
-	// $dbpassword = 'kentenben11';
-	// $dbname = 'Pro1';
-	// $tablename = 'test1';
 });
 var tablename = "test1";
 
@@ -25,15 +20,17 @@ con.connect(function(err){
 	}
 });
 
+// var MemoryStore = require('connect/middleware/session/memory'),
+var sessionStore = new sessions.MemoryStore();
 
-var cookieParser = express.cookieParser('your secret sauce')
-  , sessionStore = new nconnect.middleware.session.MemoryStore();
+var cookieParser = require('cookie-parser')('your secret sauce');
+  // , sessionStore = new nconnect.middleware.session.MemoryStore();
 
 // app.use(bodyParser.json())
 // app.use(bodyParser.urlencoded({extended:true}))
 
 app.use(cookieParser);
-app.use(express.session({ secret: 'your secret sauce', store: sessionStore }));
+app.use(sessions({ secret: 'your secret sauce', store: sessionStore, resave: false, saveUninitialized: true}));
 var http = require('http').Server(app);
 var io = require('socket.io').listen(http);
 
@@ -57,12 +54,12 @@ app.get( '/*' , function( req, res, next ) {
 	res.sendfile( __dirname + '/' + file );
 });
 
-io.configure(function (){
-	io.set('log level', 0);
-	// io.set('authorization', function (handshakeData, callback) {
-	//   callback(null, true); // error first callback style
-	// });
-});
+// io.configure(function (){
+// 	io.set('log level', 0);
+// 	// io.set('authorization', function (handshakeData, callback) {
+// 	//   callback(null, true); // error first callback style
+// 	// });
+// });
 
 
 var list_of_games=[];
@@ -240,13 +237,18 @@ sessionSockets.on('connection', function(err, socket, session) {
 	socket.on('disconnect', function(){
 		console.log("disconnecting");
 		if(user!=undefined){
-		console.log(user, ' is disconnected');
-		var inddd = list_of_playerID.indexOf(user);
-		list_of_playerID.splice(inddd, 1);
-		console.log(user, " is removed");
-		session.loggedin = false;
-		session.destroy();
-	}
+			console.log(user, ' is disconnected');
+			var inddd = list_of_playerID.indexOf(user);
+			list_of_playerID.splice(inddd, 1);
+			console.log(user, " is removed");
+			if (socket.loggedin){
+				if (socket.game_instance != undefined){
+					socket.game_instance.server_remove_player(session.pid);
+				}
+			}
+			session.loggedin = false;
+			session.destroy();
+		}
 	});
 });
 
