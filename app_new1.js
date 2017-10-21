@@ -9,7 +9,7 @@ var mysql = require('mysql');
 var con = mysql.createConnection({
 	host: 'localhost',
 	user: 'root',
-	password: 'kentenben11',
+	password: 'Weareafamily',
 	database: 'Pro1'
 });
 var tablename = "test1";
@@ -30,7 +30,7 @@ var cookieParser = require('cookie-parser')('your secret sauce');
 // app.use(bodyParser.urlencoded({extended:true}))
 
 app.use(cookieParser);
-app.use(sessions({ secret: 'your secret sauce', store: sessionStore, resave: false, saveUninitialized: true}));
+app.use(sessions({ secret: 'your secret sauce', store: sessionStore, resave: true, saveUninitialized: true}));
 var http = require('http').Server(app);
 var io = require('socket.io').listen(http);
 
