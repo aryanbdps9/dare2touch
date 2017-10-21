@@ -1,0 +1,19 @@
+{
+  "name": "dare2touch",
+  "version": "1.0.0",
+  "description": "A simple game for CS215",
+  "main": "app_new1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aryanbdps9/dare2touch.git"
+  },
+  "author": "Aryan, Tarun and Tanmaya",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aryanbdps9/dare2touch/issues"
+  },
+  "homepage": "https://github.com/aryanbdps9/dare2touch#readme"
+}
