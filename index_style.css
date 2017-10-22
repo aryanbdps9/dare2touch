@@ -12,7 +12,7 @@ input[name=PlayerID]{
     box-sizing: border-box;
 }
 
-input[type=password]{
+input[name=password]{
     width: 27%;
     padding: 12px 10px;
     margin: 8px 100px 10px 0px;
@@ -20,15 +20,30 @@ input[type=password]{
     border: 2px solid #ccc;
     box-sizing: border-box;
 }
-
-button {
+input[name=repassword]{
+    width: 27%;
+    padding: 12px 10px;
+    margin: 8px 150px 10px 0px;
+    display: inline-block;
+    border: 2px solid #ccc;
+    box-sizing: border-box;
+}
+.login_button {
     background-color: #4CAF50;
     color: white;
     padding: 14px 20px;
-    margin: 8px 250px 0px 100px;
-    border: none;
+    margin: 8px 0px 20px 0px;
     cursor: pointer;
     width: 10%;
+}
+
+.signup_button {
+    background-color: blue;
+    color: white;
+    padding: 2px 2px;
+    margin: 0px 10px 0px 10px;
+    cursor: pointer;
+    width: 7%;
 }
 
 button:hover {

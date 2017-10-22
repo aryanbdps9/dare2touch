@@ -22,7 +22,7 @@ con.connect(function(err){
 
 // var MemoryStore = require('connect/middleware/session/memory'),
 var sessionStore = new sessions.MemoryStore();
-
+var cookieSecret = 'your secret sauce';
 var cookieParser = require('cookie-parser')('your secret sauce');
   // , sessionStore = new nconnect.middleware.session.MemoryStore();
 
@@ -30,7 +30,7 @@ var cookieParser = require('cookie-parser')('your secret sauce');
 // app.use(bodyParser.urlencoded({extended:true}))
 
 app.use(cookieParser);
-app.use(sessions({ secret: 'your secret sauce', store: sessionStore, resave: true, saveUninitialized: true}));
+app.use(sessions({ secret: cookieSecret, store: sessionStore, resave: true, saveUninitialized: true}));
 var http = require('http').Server(app);
 var io = require('socket.io').listen(http);
 
@@ -40,7 +40,7 @@ var sessionSockets = new SessionSockets(io, sessionStore, cookieParser);
 app.get('/', function(req, res) {
 	res.sendfile('index_new.html', { root:__dirname });
 });
-
+console.log("???????????????????");
 
 app.get( '/*' , function( req, res, next ) {
 		//This is the current file they have requested
@@ -82,15 +82,49 @@ get_owner_by_gid = function(gid){
 	}
 
 var list_of_playerID = [];
-var roomno = 0;
 //var user;
+
+var resetq = "UPDATE test1 SET dlogged = 0";
+con.query(resetq, function(err, results){
+	if (err) throw err;
+});
+
+
+
 sessionSockets.on('connection', function(err, socket, session) {
 	console.log('New user connected');
 	var user;
+	if (session.count == undefined){
+		console.log("initial session.count before = 0");
+		session.count = 1;
+	}
+	else{
+		console.log("initial session.count before = ", session.count);
+		session.count++;
+	}
+	session.save();
+	console.log("initial session.count after = ", session.count);
+	var user;
+	console.log("session: ", session);
+	console.log("############################################");
+	if (session.loggedin){
+		// console.log("Already logged in");
+		// socket.emit("settingPlayerID", session.pid);
+		if (session.count == 1){
+			socket.emit('settingPlayerID', session.pid);
+		}
+		else{
+			socket.emit('do_login');
+		}
+		session.save();
+	}
 	//if(io.nsps['/'].adapter.rooms["room-"+roomno] && io.nsps['/'].adapter.rooms["room-"+roomno].length > noofplayers-1) roomno++;
 	socket.on('setGameID', function(data) {
 		if (session.loggedin){
 			console.log("caught setGameID");
+			if (data.playerID == undefined){
+				data.playerID = session.pid;
+			}
 			Game_ID = data.gameID;
 			PlayerID = data.playerID;
 			user = PlayerID;
@@ -112,6 +146,7 @@ sessionSockets.on('connection', function(err, socket, session) {
 					var new_new_daata = data;
 					new_new_daata.noOfPlayers = g1.get_max_nop();
 					socket.emit('join_success', new_new_daata);
+					socket.emit('join_success1', new_new_daata);
 					if(g1.get_full()){
 						g1.start_start();
 					}
@@ -125,6 +160,7 @@ sessionSockets.on('connection', function(err, socket, session) {
 				g1.server_add_player(socket);
 				socket.game_instance=g1;
 				socket.emit('join_success', data);
+				socket.emit('join_success1', data);
 				if(g1.get_full()){
 						g1.start_start();
 					}
@@ -154,7 +190,7 @@ sessionSockets.on('connection', function(err, socket, session) {
 		var actps = undefined;
 		con.query(sql, function(err, results, fields){
 			if (err) console.log(err);
-			if (results.length == 0){
+			if (results.length == 0 || results[0].dlogged == 1){
 				socket.emit("do_login");
 			}
 			else{
@@ -166,10 +202,16 @@ sessionSockets.on('connection', function(err, socket, session) {
 					socket.emit('PlayerIDExists',data);
 				} else if (hsd_pswd == actps){
 					session.loggedin = true;
+					console.log("session from the inside: ", session);
 					session.pid = uid;
+					session.save();
 					list_of_playerID.push(data);
+					user = uid;
+					var SQL2 = "UPDATE " + tablename + " SET dlogged = 1 WHERE username = " + con.escape(session.pid) + " LIMIT 1";
+					con.query(SQL2, function(err2, results2){
+						if (err2) throw err2;
+					});
 					console.log("will now emit setPlayerID", data);
-
 					socket.emit('settingPlayerID', data);
 				}
 				else{
@@ -178,6 +220,7 @@ sessionSockets.on('connection', function(err, socket, session) {
 				}
 			}
 		});
+		session.save();
 		
 	});
 
@@ -201,7 +244,7 @@ sessionSockets.on('connection', function(err, socket, session) {
 			if (err) console.log(err);
 			if (results.length != 0){
 				console.log("user exists");
-				socket.emit("do_login"); // user_exists
+				socket.emit("re_signup", uid); // user_exists
 			}
 			else{
 				var hash_p = crypto.createHash('sha256').update(data + pswd).digest('hex');
@@ -210,13 +253,18 @@ sessionSockets.on('connection', function(err, socket, session) {
 				console.log("mysql query string: ", sql2);
 				con.query(sql2, function(err, results){
 					if (err) throw err;
-					socket.emit("do_login");
+					socket.emit("do_login1");
 				});
 			}
 		});
 
+		session.save();
+
 	});
 
+	socket.on('game_over', function(){
+		socket.emit('game_over1')
+	})
 	socket.on('message', function(data){
 		// console.log("app::: socket: ", socket);
 		if (session.loggedin){
@@ -232,24 +280,35 @@ sessionSockets.on('connection', function(err, socket, session) {
 		else{
 			socket.emit('do_login');
 		}
+		session.save();
 	});
 
+
+
+
 	socket.on('disconnect', function(){
+		console.log("user: ", user);
+		console.log("session count before: ", session.count);
+		session.count = session.count - 1;
+		session.save();
+		console.log("session count after: ", session.count);
 		console.log("disconnecting");
 		if(user!=undefined){
 			console.log(user, ' is disconnected');
 			var inddd = list_of_playerID.indexOf(user);
 			list_of_playerID.splice(inddd, 1);
 			console.log(user, " is removed");
-			if (socket.loggedin){
+			if (session.loggedin){
 				if (socket.game_instance != undefined){
 					socket.game_instance.server_remove_player(session.pid);
 				}
+				
 			}
-			session.loggedin = false;
-			session.destroy();
 		}
 	});
+
+
+
 });
 
 http.listen(3000, function() {

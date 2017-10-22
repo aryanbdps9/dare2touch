@@ -10,10 +10,9 @@
 	<script src="/gc.js"></script>
 	<script src="/grid.js"></script>
 	<script>
-		var my_game_core = new gc(0);
-		var socket = my_game_core.get_socket();
-		console.log(socket);
-
+		
+		var socket = io.connect();
+		var my_game_core = null;
 
 		function Join() {
 			Player=document.getElementById('PlayerID').value;
@@ -27,10 +26,20 @@
 		function Signup(){
 			newUser = document.getElementById('PlayerID').value;
 			password=document.getElementById('password').value;
+			repassword=document.getElementById('repassword').value;
 			if(newUser==""){document.getElementById('username-error-container').innerHTML ='Please fill in the Username';}
-			if(password==""){document.getElementById('password-error-container').innerHTML ='Please fill in the Password';}
+			else if(password==""){document.getElementById('password-error-container').innerHTML ='Please fill in the Password';}
+			else if(password!=repassword){document.getElementById('password-error-container').innerHTML ='The two passwords do not match';}
 			// else if (password!="password"){document.getElementById('password-error-container').innerHTML ='Wrong Password';}
-			else socket.emit('create_player', {username: newUser, pswd: password});
+			else {socket.emit('create_player', {username: newUser, pswd: password});}
+		}
+
+		function Signup_window(){
+			document.getElementById('username-error-container').innerHTML ='';
+			document.getElementById('password-error-container').innerHTML ='';
+			//document.getElementById('login_button').style.visibility='hidden';
+			document.getElementById('signup').innerHTML='<center><b>Re-Enter Password </b><input id="repassword" type="password" placeholder="Re-Enter Password" name="repassword"><br>'+
+			'<button id="signup_button" class="login_button" type="submit" onclick="Signup()"><b>Sign Up</b></button></center>';
 		}
 
 		function Play_With_Friends(){
@@ -41,7 +50,7 @@
 		}
 
 		socket.on('GameIDExists', function(data) {
-			document.getElementById('error-container').innerHTML = data;
+			document.getElementById('gameid-error-container').innerHTML = data;
 		});
 
 		socket.on('PlayerIDExists', function(data) {
@@ -52,16 +61,58 @@
 			document.getElementById('username-error-container').innerHTML = 'Please login';
 		});
 
+		socket.on('do_login1', function(){
+			document.getElementById('username-error-container').innerHTML = 'Please login';
+			document.getElementById('signup').innerHTML='<button id="login_button" class="login_button" type="submit" onclick="Join()"><b>Login</b></button><br>';
+		});
+
+		socket.on('do_login2', function(data){
+			document.getElementById('password-error-container').innerHTML = 'User <b>'+ data + '</b> does not exists. Please SignUp below';
+		});		
+
+
+		socket.on('re_signup', function(data){
+			document.getElementById('username-error-container').innerHTML = 'Username <b>'+ data + '</b> already exists. Please try another username.';
+		})
+
 		socket.on('re_enter_credentials', function() {
 			document.getElementById('username-error-container').innerHTML ='Wrong credentials<br>\n';
 			console.log("We sent wrong credentials");
 		});
-		// socket.on('join_success', my_game_core.client_onconnected);
+		
 
 		socket.on('settingPlayerID', function(data){
+			Player = data.pid;
 			console.log("caught setPlayerID");
 			game_id_area();
 			//game_play_area();
+		});
+
+		socket.on('join_success', function(data){
+			if(my_game_core != undefined || my_game_core != null){
+				my_game_core.set_socket(null);
+				my_game_core = null;
+			}
+			my_game_core = new gc(data.gameID);
+			my_game_core.set_socket(socket);
+			my_game_core.config_connection();
+			socket.emit('join_success1', data);
+			//console.log(socket);
+
+		});
+
+		socket.on('game_over1', function(){
+			window.onkeydown = null;
+			if(my_game_core != undefined || my_game_core!= null){
+				my_game_core.self = null;
+				my_game_core.set_socket(null);
+				my_game_core = null;
+			}
+			// my_game_core = new gc(0);
+			// my_game_core.set_socket(socket);
+			// my_game_core.config_connection();
+			window.location.reload(true);
+			game_id_area();
 		});
 
 		socket.on('print_player', function(data){
@@ -74,9 +125,16 @@
 
 		socket.on('display_canvas', function(){
 			game_play_area();
+			// my_game_core.add_keyboard(1);
 		});
 
 		function game_id_area(){
+			window.onkeydown = null;
+			if(my_game_core != undefined || my_game_core!= null){
+				my_game_core.self = null;
+				my_game_core.set_socket(null);
+				my_game_core = null;
+			}
 			document.body.innerHTML = '<div id="everything" class="container"></div>';
 			//document.getElementById('imgcontainer').innerHTML = '';
 			document.getElementById('everything').innerHTML = '<center>'+
@@ -84,6 +142,7 @@
 			'<input id = "GameID" type = "text" name = "GameID" value = "" placeholder = "Enter GameID" class="game">'+
 			'<label><b>No. of Players</b></label>&emsp;'+
 			'<input id = "NoOfPlayers" type = "text" name = "NoOfPlayers" value = "" placeholder = "Enter the No. of Players" class="game"><br>'+
+			'<div id="gameid-error-container" type="error"></div><br>'+
 			'<button type="submit" onclick="Play_With_Friends()" class="play1_button">Play With Friends</button><br><br>'+
 			'<button type="submit" onclick="" class="play_button">Play With Computer</button>'+
 			'<button type="submit" onclick="" class="play_button">Play In Random Arena</button>'+
@@ -91,7 +150,7 @@
 		}
 
 		function game_play_area(){
-			document.body.innerHTML = '<canvas id="myCanvas" style="border:1px solid #d3d3d3;" width="859" height="678"></canvas>';
+			document.body.innerHTML = '<div id = "win"><canvas id="myCanvas" style="border:1px solid #d3d3d3;"></canvas></div>';
 		}
 
 		socket.on('starting_time', function(data){
@@ -119,6 +178,7 @@
 		<!-- <div id = "Form">
 			
 		</div> -->
+		<div id = "win">
 		  <div id="imgcontainer" class="imgcontainer">
 		    <img src="dare2touch.png" alt="Dare2Touch" class="Dare2Touch">
 		  </div>
@@ -131,11 +191,13 @@
 			    <label><b>Password </b></label>&emsp;
 			    <input id="password" type="password" placeholder="Enter Password" name="password"><br>
 			    <div id = "password-error-container" class="error"></div>
-			    <input type="checkbox" checked=""> Remember me
-			    <button type="submit" onclick="Join()">Login</button><br>
-			    <button type="submit" onclick="Signup()"> Login</button><br>
+			    <div id="signup">
+			    <button id="login_button" class="login_button" type="submit" onclick="Join()"><b>Login</b></button><br>
+			    First Time User?? <button class="signup_button" type="submit" onclick="Signup_window()">SignUp</button>
+				</div>
 		    </center>
 		  </div>
+		</div>
 		<!-- <canvas id="myCanvas" style="border:1px solid #d3d3d3;"></canvas> -->
 	</body>
 </html>

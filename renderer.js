@@ -7,8 +7,8 @@ function renderer(board,gnor,gnoc,list_of_players,starting){
 	console.log("renderer was called");
 	var canvas = document.getElementById("myCanvas");
 	var ctx = canvas.getContext("2d");
-	//canvas.width = window.innerWidth;
-	//canvas.height = window.innerHeight;
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
 	// console.log("ch = " , window.innerHeight);
 	// console.log("cah = ", canvas.height);
 	// console.log("cw = ", window.innerWidth);
@@ -50,20 +50,16 @@ function renderer(board,gnor,gnoc,list_of_players,starting){
 	}
 		
 
-	if(starting == 3){
+	if(starting == 1 || 2 ||3){
 		ctx.font = "30px Arial";
 		ctx.fillStyle = "yellow";
-		ctx.fillText("Starting in 3 sec.",(gnoc*side)/3, (gnor*side)/3);
+		ctx.fillText("Starting in "+ starting + " sec.",(gnoc*side)/3, (gnor*side)/3);
 	}
-	else if(starting == 2){
-		ctx.font = "30px Arial";
-		ctx.fillStyle = "yellow";
-		ctx.fillText("Starting in 2 sec.",(gnoc*side)/3, (gnor*side)/3);
-	}
-	else if(starting == 1){
-		ctx.font = "30px Arial";
-		ctx.fillStyle = "yellow";
-		ctx.fillText("Starting in 1 sec.",(gnoc*side)/3, (gnor*side)/3);
+	
+	else if(starting == 'end'){
+		ctx.font = "50px Arial";
+		ctx.fillStyle = "red";
+		ctx.fillText("GAME OVER!!!!"(gnoc*side)/3, (gnor*side)/3);
 	}
 	var endTime = new Date();
 	var timeDiff = endTime - startTime;

@@ -1,4 +1,4 @@
-var gc = function(gid, nop = 2, isServer = false){
+gc = function(gid, nop = 2, isServer = false){
 	console.log("new gc created");
 	// var grid = new grid_require(480, 720);
 	// this.nor = 480, this.noc = 720;
@@ -11,6 +11,7 @@ var gc = function(gid, nop = 2, isServer = false){
 		// this.grid = new grid_require(this.nor, this.noc);
 		// console.log("grid created.");
 		// console.log(grid);
+		this.server_player_obj_list = [];
 	}
 
 	else{
@@ -20,13 +21,13 @@ var gc = function(gid, nop = 2, isServer = false){
 	this.full = false;
 	this.current_nop = 0;
 	this.max_nop = nop;
-	this.server_player_obj_list = [];
+
 	this.update_switch = undefined;
 	this.interval = 100; // time after which kallar is called;
-	this.self = this;
+	// this.self = this;
 	this.started = false;
 	this.game_ID = gid;
-	this.cutoff = 5;
+	this.game_over_time = 0;
 	this.total_messages=0;
 
 	console.log("game_ID set to ", this.game_ID, "\tgid is ", gid);
@@ -38,7 +39,7 @@ var gc = function(gid, nop = 2, isServer = false){
 	if (!this.isServer){
 		this.myid;
 		this.client_last_input_string = '';
-		this.config_connection();
+		// this.config_connection();
 	}
 
 
@@ -50,12 +51,16 @@ gc.prototype.get_max_nop = function(){
 	return this.max_nop;
 };
 
+gc.prototype.unset_self = function(){
+	// this.self = undefined;
+};
+
 gc.prototype.add_keyboard = function(){
 	if (!this.isServer){
 			var seld = this;
 			console.log("started is", this.started);
 			if(this.started){
-			window.addEventListener("keydown", function(event){
+			window.onkeydown =  function(){
 				var keyNm = event.keyCode || event.which;
 				if ([37, 38, 39, 40, 65, 68, 83, 87].indexOf(keyNm) > -1){
 					event.preventDefault();
@@ -84,13 +89,14 @@ gc.prototype.add_keyboard = function(){
 						temp_seq = "1#0";
 						pressed = true;
 					}
+					console.log("myid = ", seld.myid);
 					temp_seq = seld.grid.get_actual_up_no().toString() + "#" + seld.myid.toString() + "#" + temp_seq;
 					console.log("my id is:", seld.myid);
 					if (pressed){
 						seld.client_last_input_string = temp_seq;
 					}
 				}
-			});
+			}
 		}
 		
 	}
@@ -142,7 +148,6 @@ gc.prototype.get_started = function(){
 	return this.started;
 };
 gc.prototype.server_add_player = function(player){
-	var self =this;
 	console.log("server_add_player called");	
 	// here player is the socket obj and it contains pid
 	player.emit('print_player', player.pid);
@@ -183,6 +188,7 @@ gc.prototype.start_start = function(){
 	//console.log("this is:", this);
 	var self=this;
 	setTimeout(function(){self.start_updating(self);}, 3000);
+	// self = undefined;
 };
 
 	
@@ -224,6 +230,7 @@ gc.prototype.start_updating = function(self){
 		//var self=this;
 		//self.update_switch = setInterval(function(){self.kallar(self);}, self.interval);
 		self.started = true;
+		console.log("myid = ", self.myid);
 		self.add_keyboard();
 		self.kallar(self);
 	}
@@ -316,7 +323,6 @@ gc.prototype.kallar = function(self){
 	
 	
 	//console.log("will call renderer");
-	start_time=new Date();
 	renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), 0);
 	//console.log("player list is:");
 	//console.log("called renderer");
@@ -350,20 +356,27 @@ gc.prototype.kallar = function(self){
 	for(i = act_up_no; i <= get_up_no; i++ ){
 		self.grid.update();
 	}
-	end_time=new Date();
-	time_Diff= end_time- start_time;
-	console.log("time taken is ", time_Diff);
-	if (self.grid.get_alive_players().length == 0){
-		clearInterval(self.update_switch);
-		console.log("update_switch is not working", self.update_switch);
-		self.grid.should_update=false;
+	//end_time=new Date();
+	//time_Diff= end_time- start_time;
+	//console.log("time taken is ", time_Diff);
+	if (self.grid.get_alive_players().length <= 0){
+		self.game_over_time++;
 	}
-	else setTimeout(function(){self.kallar(self);}, curr_interval);
+	else {self.game_over_time=0;}
+	if(self.game_over_time>=5){
+		self.grid.should_update=false;
+		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), "end");
+		setTimeout(function(){self.socket.emit('game_over');}, 3000);
+		window.onkeydown = null;
+		self.grid = null;
+	}
+	else {setTimeout(function(){self.kallar(self);}, curr_interval);
 	console.log("total messages are ",self.total_messages);
+	console.log("game id is", self.game_ID);
 	self.grid.get_alive_players().forEach(function(p){
 			console.log("position of ", p.the_id, " is ", p.finalpos);
 			console.log("direction of ", p.the_id, " is ", p.finaldir);
-		});
+		});}
 
 };
 
@@ -406,14 +419,24 @@ gc.prototype.get_socket = function(){
 
 gc.prototype.client_onconnected  = function(self, data){
 	var myid = data.playerID;
+	console.log("data in client_onconnected is ", data)
 	self.max_nop = data.noOfPlayers;
 	self.myid = myid;
 	self.client_add_player(myid);
+	//self.set_gameID(data.gameID);
+}
+
+gc.prototype.set_socket = function(sock){
+	this.socket = sock;
+}
+
+gc.prototype.server_remove_player = function(pida){
+
 }
 
 gc.prototype.config_connection = function(){
 	var self=this;
-	this.socket = io.connect();
+	// this.socket = io.connect();
 	//console.log("socket inside gc:");
 	//console.log(this.socket);
 	this.socket.on('connection', function(){
@@ -433,7 +456,7 @@ gc.prototype.config_connection = function(){
 	this.socket.on('game_start', function(){
 		self.start_updating(self);
 	}); //
-	this.socket.on('join_success', function(data){self.client_onconnected(self, data);});
+	this.socket.on('join_success1', function(data){self.client_onconnected(self, data);});
 	this.socket.on('move', function(data){
 		self.mover(data, self);
 	}); //
