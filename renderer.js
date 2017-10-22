@@ -50,7 +50,7 @@ function renderer(board,gnor,gnoc,list_of_players,starting){
 	}
 		
 
-	if(starting == 1 || 2 ||3){
+	if(starting == 1 || starting == 2 || starting == 3){
 		ctx.font = "30px Arial";
 		ctx.fillStyle = "yellow";
 		ctx.fillText("Starting in "+ starting + " sec.",(gnoc*side)/3, (gnor*side)/3);
@@ -59,7 +59,7 @@ function renderer(board,gnor,gnoc,list_of_players,starting){
 	else if(starting == 'end'){
 		ctx.font = "50px Arial";
 		ctx.fillStyle = "red";
-		ctx.fillText("GAME OVER!!!!"(gnoc*side)/3, (gnor*side)/3);
+		ctx.fillText("GAME OVER!!!!", (gnoc*side)/3, (gnor*side)/3);
 	}
 	var endTime = new Date();
 	var timeDiff = endTime - startTime;

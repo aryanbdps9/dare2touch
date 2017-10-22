@@ -39,7 +39,7 @@ gc = function(gid, nop = 2, isServer = false){
 	if (!this.isServer){
 		this.myid;
 		this.client_last_input_string = '';
-		// this.config_connection();
+		this.config_connection();
 	}
 
 
@@ -230,6 +230,7 @@ gc.prototype.start_updating = function(self){
 		//var self=this;
 		//self.update_switch = setInterval(function(){self.kallar(self);}, self.interval);
 		self.started = true;
+		console.log("socket = ", self.socket);
 		console.log("myid = ", self.myid);
 		self.add_keyboard();
 		self.kallar(self);
@@ -368,7 +369,7 @@ gc.prototype.kallar = function(self){
 		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), "end");
 		setTimeout(function(){self.socket.emit('game_over');}, 3000);
 		window.onkeydown = null;
-		self.grid = null;
+		// self.grid = null;
 	}
 	else {setTimeout(function(){self.kallar(self);}, curr_interval);
 	console.log("total messages are ",self.total_messages);
@@ -423,7 +424,7 @@ gc.prototype.client_onconnected  = function(self, data){
 	self.max_nop = data.noOfPlayers;
 	self.myid = myid;
 	self.client_add_player(myid);
-	//self.set_gameID(data.gameID);
+	self.set_gameID(data.gameID);
 }
 
 gc.prototype.set_socket = function(sock){
@@ -436,7 +437,7 @@ gc.prototype.server_remove_player = function(pida){
 
 gc.prototype.config_connection = function(){
 	var self=this;
-	// this.socket = io.connect();
+	this.socket = io.connect();
 	//console.log("socket inside gc:");
 	//console.log(this.socket);
 	this.socket.on('connection', function(){
@@ -456,7 +457,7 @@ gc.prototype.config_connection = function(){
 	this.socket.on('game_start', function(){
 		self.start_updating(self);
 	}); //
-	this.socket.on('join_success1', function(data){self.client_onconnected(self, data);});
+	this.socket.on('join_success', function(data){self.client_onconnected(self, data);});
 	this.socket.on('move', function(data){
 		self.mover(data, self);
 	}); //

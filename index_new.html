@@ -11,8 +11,8 @@
 	<script src="/grid.js"></script>
 	<script>
 		
-		var socket = io.connect();
-		var my_game_core = null;
+		var my_game_core = new gc(0);
+		var socket = my_game_core.get_socket();
 
 		function Join() {
 			Player=document.getElementById('PlayerID').value;
@@ -88,26 +88,26 @@
 			//game_play_area();
 		});
 
-		socket.on('join_success', function(data){
-			if(my_game_core != undefined || my_game_core != null){
-				my_game_core.set_socket(null);
-				my_game_core = null;
-			}
-			my_game_core = new gc(data.gameID);
-			my_game_core.set_socket(socket);
-			my_game_core.config_connection();
-			socket.emit('join_success1', data);
-			//console.log(socket);
+		// socket.on('join_success', function(data){
+		// 	if(my_game_core != undefined || my_game_core != null){
+		// 		my_game_core.set_socket(null);
+		// 		my_game_core = null;
+		// 	}
+		// 	my_game_core = new gc(data.gameID);
+		// 	my_game_core.set_socket(socket);
+		// 	my_game_core.config_connection();
+		// 	socket.emit('join_success1', data);
+		// 	//console.log(socket);
 
-		});
+		// });
 
 		socket.on('game_over1', function(){
 			window.onkeydown = null;
-			if(my_game_core != undefined || my_game_core!= null){
-				my_game_core.self = null;
-				my_game_core.set_socket(null);
-				my_game_core = null;
-			}
+			// if(my_game_core != undefined || my_game_core!= null){
+			// 	my_game_core.self = null;
+			// 	my_game_core.set_socket(null);
+			// 	my_game_core = null;
+			// }
 			// my_game_core = new gc(0);
 			// my_game_core.set_socket(socket);
 			// my_game_core.config_connection();
@@ -130,11 +130,11 @@
 
 		function game_id_area(){
 			window.onkeydown = null;
-			if(my_game_core != undefined || my_game_core!= null){
-				my_game_core.self = null;
-				my_game_core.set_socket(null);
-				my_game_core = null;
-			}
+			// if(my_game_core != undefined || my_game_core!= null){
+			// 	my_game_core.self = null;
+			// 	my_game_core.set_socket(null);
+			// 	my_game_core = null;
+			// }
 			document.body.innerHTML = '<div id="everything" class="container"></div>';
 			//document.getElementById('imgcontainer').innerHTML = '';
 			document.getElementById('everything').innerHTML = '<center>'+
