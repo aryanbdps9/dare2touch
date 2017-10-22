@@ -263,7 +263,15 @@ sessionSockets.on('connection', function(err, socket, session) {
 	});
 
 	socket.on('game_over', function(){
-		socket.emit('game_over1')
+		// len = list_of_games.length;
+		// var gg=socket.game_instance;
+		// for(var i=0; i<len; i++){
+		// 	if(gg.game_ID == list_of_games[i].game_ID){
+		// 		list_of_games.splice(i, 1);
+		// 		break;
+		// 	}
+		// }
+		socket.emit('game_over1');
 	})
 	socket.on('message', function(data){
 		// console.log("app::: socket: ", socket);
@@ -299,12 +307,26 @@ sessionSockets.on('connection', function(err, socket, session) {
 			list_of_playerID.splice(inddd, 1);
 			console.log(user, " is removed");
 			if (session.loggedin){
-				if (socket.game_instance != undefined){
-					socket.game_instance.server_remove_player(session.pid);
-				}
+				
 				
 			}
 		}
+		if (socket.game_instance != undefined){
+			socket.game_instance.server_remove_player(session.pid);
+			if(socket.game_instance.get_NoOfPlayers() <= 0){
+				len = list_of_games.length;
+				var gg=socket.game_instance.game_ID;
+				for(var i=0; i<len; i++){
+					if(gg == list_of_games[i].game_ID){
+						list_of_games.splice(i, 1);
+						break;
+					}
+				}
+			}
+
+		}
+
+		socket.game_instance=null;
 	});
 
 

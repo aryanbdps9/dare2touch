@@ -82,7 +82,7 @@
 		
 
 		socket.on('settingPlayerID', function(data){
-			Player = data.pid;
+			Player = data;
 			console.log("caught setPlayerID");
 			game_id_area();
 			//game_play_area();
@@ -152,6 +152,10 @@
 		function game_play_area(){
 			document.body.innerHTML = '<div id = "win"><canvas id="myCanvas" style="border:1px solid #d3d3d3;"></canvas></div>';
 		}
+
+		socket.on('player_disconnected', function(pida){
+			document.body.innerHTML += '<b>'+pida+'</b> was disconnected';
+		});
 
 		socket.on('starting_time', function(data){
 			start1=data;

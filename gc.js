@@ -47,6 +47,10 @@ gc = function(gid, nop = 2, isServer = false){
 
 };
 
+gc.prototype.get_NoOfPlayers = function(){
+	return this.server_player_obj_list.length;
+}
+
 gc.prototype.get_max_nop = function(){
 	return this.max_nop;
 };
@@ -397,8 +401,8 @@ gc.prototype.client_remove_seq = function(up_no){
 	}
 }
 
-gc.prototype.client_kill_player = function(pida){
-	this.grid.remove_player(pida);
+gc.prototype.client_kill_player = function(self, pida){
+	self.grid.remove_player(pida);
 };
 
 
@@ -432,8 +436,20 @@ gc.prototype.set_socket = function(sock){
 }
 
 gc.prototype.server_remove_player = function(pida){
-
-}
+	len = this.server_player_obj_list.length;
+	console.log('length is ', len);
+	console.log('server_player_obj_list is ', this.server_player_obj_list);
+	for(var i=0; i<len; i++){
+		if(pida == this.server_player_obj_list[i].pid){
+			this.server_player_obj_list.splice(i, 1);
+			break;
+		}
+	}
+	this.server_player_obj_list.forEach(function(p){
+		p.emit('killit', pida);
+		p.emit('player_disconnected', pida);
+	});
+};
 
 gc.prototype.config_connection = function(){
 	var self=this;
@@ -462,7 +478,7 @@ gc.prototype.config_connection = function(){
 		self.mover(data, self);
 	}); //
 	this.socket.on('game_over', this.client_game_over); //
-	this.socket.on('killit', this.client_kill_player); 
+	this.socket.on('killit', function(data){self.client_kill_player(self, data)}); 
 	this.socket.on('starting_game', function(){self.client_count_display(self);});
 	this.socket.on('rejected', this.client_remove_seq);
 	this.socket.on('accepted_inp_seq', function(){console.log('yaay! seq accepted');});
