@@ -49,6 +49,19 @@
 			socket.emit('setGameID', {gameID:game_ID, playerID:Player, noOfPlayers:no_OfPlayers});		
 		}
 
+		// game_ID=-123456789;
+		function Random_play(){
+			game_ID=-123456789;
+			no_OfPlayers = 4;
+			socket.emit('setGameID', {gameID:game_ID, playerID:Player, noOfPlayers:no_OfPlayers});
+		}
+
+		socket.on('random_game_full', function(data){
+			// game_ID--;
+			// data.gameID=game_ID;
+			socket.emit('setGameID', data);
+		});
+
 		socket.on('GameIDExists', function(data) {
 			document.getElementById('gameid-error-container').innerHTML = data;
 		});
@@ -118,7 +131,7 @@
 		socket.on('print_player', function(data){
 			//document.getElementById('everything').innerHTML = '';
 			if (data == Player){
-				document.body.innerHTML ='<b>'+ Player + '</b>(You) is Connected<br>';
+				document.body.innerHTML ='<b>'+ Player + '</b><br>'+'(You) is Connected<br>';
 			}
 			else {document.body.innerHTML +='<b>'+data+ '</b> is Connected<br>';}
 		});
@@ -137,7 +150,8 @@
 			// }
 			document.body.innerHTML = '<div id="everything" class="container"></div>';
 			//document.getElementById('imgcontainer').innerHTML = '';
-			document.getElementById('everything').innerHTML = '<center>'+
+			document.getElementById('everything').innerHTML ='<b>' + Player + '</b>'+
+			'<center>'+
 			'<label><b>Game ID</b></label>&emsp;'+
 			'<input id = "GameID" type = "text" name = "GameID" value = "" placeholder = "Enter GameID" class="game">'+
 			'<label><b>No. of Players</b></label>&emsp;'+
@@ -145,7 +159,7 @@
 			'<div id="gameid-error-container" type="error"></div><br>'+
 			'<button type="submit" onclick="Play_With_Friends()" class="play1_button">Play With Friends</button><br><br>'+
 			'<button type="submit" onclick="" class="play_button">Play With Computer</button>'+
-			'<button type="submit" onclick="" class="play_button">Play In Random Arena</button>'+
+			'<button type="submit" onclick="Random_play()" class="play_button">Play In Random Arena</button>'+
 			'</center>';
 		}
 

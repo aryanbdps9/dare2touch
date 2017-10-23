@@ -40,13 +40,13 @@ function renderer(board,gnor,gnoc,list_of_players,starting){
 	}
 	for (var j=list_of_players.length-1; j>=0; j--){
 		ctx.beginPath();
-		ctx.rect(gnoc*side+side, 10*side+side*3*j, side*2, side*2);
+		ctx.rect(gnoc*side+side, 10*side+side*4*j, side*2, side*2);
 		ctx.fillStyle = list_of_colors[j];
 		ctx.fill();
 		ctx.closePath();
 		ctx.font = "20px Arial";
-		ctx.fillStyle = "yellow";
-		ctx.fillText(list_of_players[j][0], gnoc*side+side*4, 10*side+side*(3*j+2));
+		ctx.fillStyle = list_of_colors[j];
+		ctx.fillText(list_of_players[j][0] + "  "+list_of_players[j][1], gnoc*side+side*5, 10*side+side*(4*j+2));
 	}
 		
 

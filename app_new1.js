@@ -23,7 +23,7 @@ con.connect(function(err){
 // var MemoryStore = require('connect/middleware/session/memory'),
 var sessionStore = new sessions.MemoryStore();
 var cookieSecret = 'your secret sauce';
-var cookieParser = require('cookie-parser')('your secret sauce');
+var cookieParser = require('cookie-parser')(cookieSecret);
   // , sessionStore = new nconnect.middleware.session.MemoryStore();
 
 // app.use(bodyParser.json())
@@ -83,6 +83,7 @@ get_owner_by_gid = function(gid){
 
 var list_of_playerID = [];
 //var user;
+random_gameid=-123456789;
 
 var resetq = "UPDATE test1 SET dlogged = 0";
 con.query(resetq, function(err, results){
@@ -126,6 +127,9 @@ sessionSockets.on('connection', function(err, socket, session) {
 				data.playerID = session.pid;
 			}
 			Game_ID = data.gameID;
+			if(Game_ID <= -123456789){
+				Game_ID= random_gameid;
+			}
 			PlayerID = data.playerID;
 			user = PlayerID;
 			NoOfPlayers = data.noOfPlayers;
@@ -135,9 +139,16 @@ sessionSockets.on('connection', function(err, socket, session) {
 			if(list_of_games.indexOf(g1) > -1){
 				//console.log("full is",g1.get_full());
 				if(g1.get_full()){
-					var inddd = list_of_playerID.indexOf(user);
-					list_of_playerID.splice(inddd, 1);
-					socket.emit('GameIDExists','The game with GameID '+ Game_ID + ' is full. Try after sometime!!');
+					if(Game_ID <= -123456789){
+						random_gameid--;
+						data.gameID--;
+						socket.emit('random_game_full', data);
+					}
+					else {
+						var inddd = list_of_playerID.indexOf(user);
+						list_of_playerID.splice(inddd, 1);
+						socket.emit('GameIDExists','The game with GameID '+ Game_ID + ' is full. Try after sometime!!');
+					}
 				}
 				else{
 					socket.pid=PlayerID;

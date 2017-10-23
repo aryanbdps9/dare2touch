@@ -548,12 +548,12 @@ function Grid(nora, noca){
 				else{
 					kill_list.push(p);
 					pp = self.get_owner_by_pid(host.pid);
-					pp.pnts += 1;
+					pp.pnts += 100;
 					p.killed_by = pp.the_id;
 					console.log("plr ", p.the_id, " killed\n");
 					for(var i = 0; i < ini_list_pid_and_pnts.length; i++){
 						if (ini_list_pid_and_pnts[i][0] == host.pid){
-							ini_list_pid_and_pnts[i][1] += 1;
+							ini_list_pid_and_pnts[i][1] += 100;
 
 							break;
 						}
@@ -569,6 +569,18 @@ function Grid(nora, noca){
 			}else{
 				console.log(JSON.stringify(kill_list));
 			}
+			len = current_gplayers.length;
+			for (i=0; i<len; i++){
+				current_gplayers[i].pnts+=1;
+				len1=ini_list_pid_and_pnts.length;
+				for(j=0; j<len1; j++){
+					if(current_gplayers[i].the_id==ini_list_pid_and_pnts[j][0]){
+						ini_list_pid_and_pnts[j][1]+=1;
+						break;
+					}
+				}
+			}
+			console.log("list of points " ,ini_list_pid_and_pnts);
 		});
 
 
