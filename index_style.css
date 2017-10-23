@@ -104,3 +104,12 @@ img.Dare2Touch {
     cursor: pointer;
     width: 15%;
 }
+
+.exit_game{
+    background-color: green;
+    margin: 10px 0px 10px 30px;
+    padding: 10px 10px 10px 10px;
+    border: none;
+    cursor: pointer;
+    width: 7%;
+}

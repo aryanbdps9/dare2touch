@@ -131,7 +131,9 @@
 		socket.on('print_player', function(data){
 			//document.getElementById('everything').innerHTML = '';
 			if (data == Player){
-				document.body.innerHTML ='<b>'+ Player + '</b><br>'+'(You) is Connected<br>';
+				document.body.innerHTML ='<p><button type="submit" onclick="Exit_game()" class="exit_game"><u>Exit Game</u></button><br>'+
+				 Player + '</p>'+
+				'You are Connected<br>';
 			}
 			else {document.body.innerHTML +='<b>'+data+ '</b> is Connected<br>';}
 		});
@@ -140,6 +142,14 @@
 			game_play_area();
 			// my_game_core.add_keyboard(1);
 		});
+
+		function Exit_game(){
+			console.log("exit game was called");
+			window.onkeydown = null;
+			window.location.reload(true);
+			//socket.emit('disconnect1');
+			game_id_area();
+		}
 
 		function game_id_area(){
 			window.onkeydown = null;
@@ -155,7 +165,7 @@
 			'<label><b>Game ID</b></label>&emsp;'+
 			'<input id = "GameID" type = "text" name = "GameID" value = "" placeholder = "Enter GameID" class="game">'+
 			'<label><b>No. of Players</b></label>&emsp;'+
-			'<input id = "NoOfPlayers" type = "text" name = "NoOfPlayers" value = "" placeholder = "Enter the No. of Players" class="game"><br>'+
+			'<input id = "NoOfPlayers" type = "text" name = "NoOfPlayers" value = "" placeholder = "Enter the No. of Players(2 or more)" class="game"><br>'+
 			'<div id="gameid-error-container" type="error"></div><br>'+
 			'<button type="submit" onclick="Play_With_Friends()" class="play1_button">Play With Friends</button><br><br>'+
 			'<button type="submit" onclick="" class="play_button">Play With Computer</button>'+
@@ -164,7 +174,8 @@
 		}
 
 		function game_play_area(){
-			document.body.innerHTML = '<p>' + Player + '</p>'+
+			document.body.innerHTML ='<p><button type="submit" onclick="Exit_game()" class="exit_game"><u>Exit Game</u></button><br>'+
+				Player + '</p>'+
 			'<div id = "win"><canvas id="myCanvas" style="border:1px solid #d3d3d3;"></canvas></div>';
 		}
 
