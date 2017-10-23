@@ -95,6 +95,10 @@ con.query(resetq, function(err, results){
 sessionSockets.on('connection', function(err, socket, session) {
 	console.log('New user connected');
 	var user;
+	if (session == undefined){
+		socket.emit('ref');
+	}
+	else{
 	if (session.count == undefined){
 		console.log("initial session.count before = 0");
 		session.count = 1;
@@ -339,6 +343,7 @@ sessionSockets.on('connection', function(err, socket, session) {
 
 		socket.game_instance=null;
 	});
+	}
 
 
 

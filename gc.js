@@ -2,7 +2,7 @@ gc = function(gid, nop = 2, isServer = false){
 	console.log("new gc created");
 	// var grid = new grid_require(480, 720);
 	// this.nor = 480, this.noc = 720;
-	this.nor = 100, this.noc = 200;
+	this.nor = 120, this.noc = 250;
 	// var grid_require = require('./grid');
 	// var grid = new grid_require('nor, noc');
 	this.grid = undefined;
@@ -364,7 +364,7 @@ gc.prototype.kallar = function(self){
 	//end_time=new Date();
 	//time_Diff= end_time- start_time;
 	//console.log("time taken is ", time_Diff);
-	if (self.grid.get_alive_players().length <= 0){
+	if (self.grid.get_alive_players().length <= 1){
 		self.game_over_time++;
 	}
 	else {self.game_over_time=0;}

@@ -150,7 +150,7 @@
 			// }
 			document.body.innerHTML = '<div id="everything" class="container"></div>';
 			//document.getElementById('imgcontainer').innerHTML = '';
-			document.getElementById('everything').innerHTML ='<b>' + Player + '</b>'+
+			document.getElementById('everything').innerHTML ='<p>' + Player + '</p>'+
 			'<center>'+
 			'<label><b>Game ID</b></label>&emsp;'+
 			'<input id = "GameID" type = "text" name = "GameID" value = "" placeholder = "Enter GameID" class="game">'+
@@ -164,7 +164,8 @@
 		}
 
 		function game_play_area(){
-			document.body.innerHTML = '<div id = "win"><canvas id="myCanvas" style="border:1px solid #d3d3d3;"></canvas></div>';
+			document.body.innerHTML = '<p>' + Player + '</p>'+
+			'<div id = "win"><canvas id="myCanvas" style="border:1px solid #d3d3d3;"></canvas></div>';
 		}
 
 		socket.on('player_disconnected', function(pida){
@@ -173,6 +174,10 @@
 
 		socket.on('starting_time', function(data){
 			start1=data;
+		});
+
+		socket.on('ref', function(){
+			window.location.reload(true);
 		});
 		
 		socket.on('ending_time', function(data){
