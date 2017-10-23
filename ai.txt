@@ -1,7 +1,7 @@
 function ai :
 	var current_diff = 0.
 	var max_diff = 0.
-	var direction = 0.
+	var direction = [].
 	var count = 0.
 	var my_board = board.
 	var nextpos = [];
