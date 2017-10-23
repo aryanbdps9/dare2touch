@@ -13,9 +13,9 @@ function renderer(board,gnor,gnoc,list_of_players,starting){
 	// console.log("cah = ", canvas.height);
 	// console.log("cw = ", window.innerWidth);
 	// console.log("caw = ", canvas.width);
-	// var side = Math.min(window.innerWidth/200,window.innerHeight/100);
+	var side = Math.min((window.innerWidth - 130)/gnoc, window.innerHeight/gnor);
 	// console.log("side:  ", side);
-	var side = 4.1;
+	// var side = 4.1;
 	for (var rr = 0; rr < gnor; rr++){
 		for (var i = 0; i < gnoc; i++){
 			if(board[rr][i] === undefined){
