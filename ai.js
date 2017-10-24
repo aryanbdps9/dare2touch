@@ -1,7 +1,7 @@
 function AI(board,currentpos,lastpos,gnor,gnoc){
 	var self = this;
-	var current_diff = 0;
-	var max_diff = 0;
+	var current_diff = -(gnor*gnoc);
+	var max_diff = -(gnor*gnoc);
 	var direction = [];
 	var nextpos = [];
 	var actual_next_pos = [];
@@ -22,11 +22,11 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 							(currentposition[1][0] != gnor-1 || (currentposition[1][1] - lastposition[1][1] != 1)) &&
 							(currentposition[1][1] != 0 || (currentposition[1][0] - lastposition[1][0] != 1)) &&
 							(currentposition[1][1] != gnoc-1 || (currentposition[1][0] -lastposition[1][0] != -1))){
-							if(currentposition[1][0] - lastposition[1][0] != 0){
+							if(currentposition[1][0] - lastposition[1][0] != 0 && board[currentposition[1][0]][currentposition[1][1] - currentposition[1][0] + lastposition[1][0]] === undefined){
 								player_next_pos = [currentposition[1][0],currentposition[1][1] - currentposition[1][0] + lastposition[1][0]];
 							}
-							else{
-								player_next_pos = [currentpositon[1][0] - currentposition[1][1] + lastposition[1][1],currentposition[1][1]];
+							else if(board[currentposition[1][0] - currentposition[1][1] + lastposition[1][1]][currentposition[1][1]] === undefined){
+								player_next_pos = [currentposition[1][0] - currentposition[1][1] + lastposition[1][1],currentposition[1][1]];
 							}
 						}
 					}
@@ -35,10 +35,10 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 							(currentposition[1][0] != gnor-1 || (currentposition[1][0] - lastposition[1][0] != 1)) &&
 							(currentposition[1][1] != 0 || (currentposition[1][1] - lastposition[1][1] != -1)) &&
 							(currentposition[1][1] != gnoc-1 || (currentposition[1][1] -lastposition[1][1] != 1))){
-							if(currentposition[1][0] - lastposition[1][0] != 0){
+							if(currentposition[1][0] - lastposition[1][0] != 0 && board[currentposition[1][0] + currentposition[1][0] - lastposition[1][0]][currentposition[1][1]] === undefined){
 								player_next_pos = [currentposition[1][0] + currentposition[1][0] - lastposition[1][0],currentposition[1][1]];
 							}
-							else{
+							else if(board[currentposition[1][0]][currentposition[1][1] + currentposition[1][1] - lastposition[1][1]] === undefined){
 								player_next_pos = [currentposition[1][0],currentposition[1][1] + currentposition[1][1] - lastposition[1][1]];
 							}
 						}
@@ -48,10 +48,10 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 							(currentposition[1][0] != gnor-1 || (currentposition[1][1] - lastposition[1][1] != -1)) &&
 							(currentposition[1][1] != 0 || (currentposition[1][0] - lastposition[1][0] != -1)) &&
 							(currentposition[1][1] != gnoc-1 || (currentposition[1][0] -lastposition[1][0] != 1))){
-							if(currentposition[1][0] - lastposition[1][0] != 0){
+							if(currentposition[1][0] - lastposition[1][0] != 0 && board[currentposition[1][0]][currentposition[1][1] + currentposition[1][0] - lastposition[1][0]] === undefined){
 								player_next_pos = [currentposition[1][0],currentposition[1][1] + currentposition[1][0] - lastposition[1][0]];
 							}
-							else{
+							else if(board[currentposition[1][0] + currentposition[1][1] - lastposition[1][1]][currentposition[1][1]] === undefined){
 								player_next_pos = [currentposition[1][0] + currentposition[1][1] - lastposition[1][1],currentposition[1][1]];
 							}
 						}
@@ -84,15 +84,19 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 					(currentpos[0][1] != gnoc-1 || (currentpos[0][0] -lastpos[0][0] != -1))){
 					if(currentpos[0][0] - lastpos[0][0] != 0){
 						nextpos = [currentpos[0][0],currentpos[0][1] - currentpos[0][0] + lastpos[0][0]];
-						current_diff = self.find_diff(currentpos,nextpos,lastpos);
-						console.log(current_diff)
-						console.log(nextpos)
+						if(board[nextpos[0]][nextpos[1]] === undefined){
+							current_diff = self.find_diff(currentpos,nextpos,lastpos);
+							console.log(current_diff)
+							console.log(nextpos)
+						}
 					}
 					else{
 						nextpos = [currentpos[0][0] - currentpos[0][1] + lastpos[0][1],currentpos[0][1]];
-						current_diff = self.find_diff(currentpos,nextpos,lastpos);
-						console.log(current_diff)
-						console.log(nextpos)
+						if(board[nextpos[0]][nextpos[1]] === undefined){
+							current_diff = self.find_diff(currentpos,nextpos,lastpos);
+							console.log(current_diff)
+							console.log(nextpos)
+						}
 					}
 				}
 			}
@@ -103,15 +107,19 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 					(currentpos[0][1] != gnoc-1 || (currentpos[0][1] -lastpos[0][1] != 1))){
 					if(currentpos[0][0] - lastpos[0][0] != 0){
 						nextpos = [currentpos[0][0] + currentpos[0][0] - lastpos[0][0],currentpos[0][1]];
-						current_diff = self.find_diff(currentpos,nextpos,lastpos);
-						console.log(current_diff)
-						console.log(nextpos)
+						if(board[nextpos[0]][nextpos[1]] === undefined){
+							current_diff = self.find_diff(currentpos,nextpos,lastpos);
+							console.log(current_diff)
+							console.log(nextpos)
+						}
 					}
 					else{
 						nextpos = [currentpos[0][0],currentpos[0][1] + currentpos[0][1] - lastpos[0][1]];
-						current_diff = self.find_diff(currentpos,nextpos,lastpos);
-						console.log(current_diff)
-						console.log(nextpos)
+						if(board[nextpos[0]][nextpos[1]] === undefined){
+							current_diff = self.find_diff(currentpos,nextpos,lastpos);
+							console.log(current_diff)
+							console.log(nextpos)
+						}
 					}
 				}
 			}
@@ -122,15 +130,19 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 					(currentpos[0][1] != gnoc-1 || (currentpos[0][0] -lastpos[0][0] != 1))){
 					if(currentpos[0][0] - lastpos[0][0] != 0){
 						nextpos = [currentpos[0][0],currentpos[0][1] + currentpos[0][0] - lastpos[0][0]];
-						current_diff = self.find_diff(currentpos,nextpos,lastpos);
-						console.log(current_diff)
-						console.log(nextpos)
+						if(board[nextpos[0]][nextpos[1]] === undefined){
+							current_diff = self.find_diff(currentpos,nextpos,lastpos);
+							console.log(current_diff)
+							console.log(nextpos)
+						}
 					}
 					else{
 						nextpos = [currentpos[0][0] + currentpos[0][1] - lastpos[0][1],currentpos[0][1]];
-						current_diff = self.find_diff(currentpos,nextpos,lastpos);
-						console.log(current_diff)
-						console.log(nextpos)
+						if(board[nextpos[0]][nextpos[1]] === undefined){
+							current_diff = self.find_diff(currentpos,nextpos,lastpos);
+							console.log(current_diff)
+							console.log(nextpos)
+						}
 					}
 				}
 			}
