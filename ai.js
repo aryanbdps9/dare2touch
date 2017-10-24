@@ -6,7 +6,7 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 	var nextpos = [];
 	var actual_next_pos = [];
 
-	this.find_diff = function(currentposition,nextposition,lastposition){
+	var find_diff = function(currentposition,nextposition,lastposition){
 		var ai_points = 0;
 		var player_points = 0;
 		var diff_points = 0;
@@ -59,10 +59,10 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 
 					// console.log("before checing undefined property")
 					if(board[rr][i] === undefined){
-						if(Math.abs(nextposition[0] - rr) + Math.abs(nextposition[1] - i) > Math.abs(player_next_pos[0] - rr) + Math.abs(player_next_pos[1] - i)){
+						if(Math.abs(nextposition[0] - rr) + Math.abs(nextposition[1] - i) < Math.abs(player_next_pos[0] - rr) + Math.abs(player_next_pos[1] - i)){
 							ai_points++;
 						}
-						else if(Math.abs(nextposition[0] - rr) + Math.abs(nextposition[1] - i) < Math.abs(player_next_pos[0] - rr) + Math.abs(player_next_pos[1] - i)){
+						else if(Math.abs(nextposition[0] - rr) + Math.abs(nextposition[1] - i) > Math.abs(player_next_pos[0] - rr) + Math.abs(player_next_pos[1] - i)){
 							player_points++;
 						}
 					}
@@ -73,7 +73,7 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 		return diff_points;
 	}
 
-	this.ai = function(currentpos,lastpos){
+	var ai = function(){
 		console.log(currentpos)
 		// console.log("ai called")
 		for(var i=0;i<3;i++){
@@ -85,7 +85,7 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 					if(currentpos[0][0] - lastpos[0][0] != 0){
 						nextpos = [currentpos[0][0],currentpos[0][1] - currentpos[0][0] + lastpos[0][0]];
 						if(board[nextpos[0]][nextpos[1]] === undefined){
-							current_diff = self.find_diff(currentpos,nextpos,lastpos);
+							current_diff = find_diff(currentpos,nextpos,lastpos);
 							console.log(current_diff)
 							console.log(nextpos)
 						}
@@ -93,7 +93,7 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 					else{
 						nextpos = [currentpos[0][0] - currentpos[0][1] + lastpos[0][1],currentpos[0][1]];
 						if(board[nextpos[0]][nextpos[1]] === undefined){
-							current_diff = self.find_diff(currentpos,nextpos,lastpos);
+							current_diff = find_diff(currentpos,nextpos,lastpos);
 							console.log(current_diff)
 							console.log(nextpos)
 						}
@@ -108,7 +108,7 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 					if(currentpos[0][0] - lastpos[0][0] != 0){
 						nextpos = [currentpos[0][0] + currentpos[0][0] - lastpos[0][0],currentpos[0][1]];
 						if(board[nextpos[0]][nextpos[1]] === undefined){
-							current_diff = self.find_diff(currentpos,nextpos,lastpos);
+							current_diff = find_diff(currentpos,nextpos,lastpos);
 							console.log(current_diff)
 							console.log(nextpos)
 						}
@@ -116,7 +116,7 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 					else{
 						nextpos = [currentpos[0][0],currentpos[0][1] + currentpos[0][1] - lastpos[0][1]];
 						if(board[nextpos[0]][nextpos[1]] === undefined){
-							current_diff = self.find_diff(currentpos,nextpos,lastpos);
+							current_diff = find_diff(currentpos,nextpos,lastpos);
 							console.log(current_diff)
 							console.log(nextpos)
 						}
@@ -131,7 +131,7 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 					if(currentpos[0][0] - lastpos[0][0] != 0){
 						nextpos = [currentpos[0][0],currentpos[0][1] + currentpos[0][0] - lastpos[0][0]];
 						if(board[nextpos[0]][nextpos[1]] === undefined){
-							current_diff = self.find_diff(currentpos,nextpos,lastpos);
+							current_diff = find_diff(currentpos,nextpos,lastpos);
 							console.log(current_diff)
 							console.log(nextpos)
 						}
@@ -139,7 +139,7 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 					else{
 						nextpos = [currentpos[0][0] + currentpos[0][1] - lastpos[0][1],currentpos[0][1]];
 						if(board[nextpos[0]][nextpos[1]] === undefined){
-							current_diff = self.find_diff(currentpos,nextpos,lastpos);
+							current_diff = find_diff(currentpos,nextpos,lastpos);
 							console.log(current_diff)
 							console.log(nextpos)
 						}
@@ -159,6 +159,7 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 		// console.log("everything was ohk")
 		return direction;
 	}
+	return ai();
 }
 
 if( 'undefined' != typeof global ) {
