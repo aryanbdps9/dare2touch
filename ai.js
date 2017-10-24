@@ -160,4 +160,7 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 		return direction;
 	}
 }
-module.exports = AI;
+
+if( 'undefined' != typeof global ) {
+    module.exports = global.AI = AI;
+}
