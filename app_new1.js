@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
-
+var rd = require('./rsa/rsa_decryptor.js');
+var rdd = new rd();
 var sessions = require('express-session');
 var nconnect = require('connect');
 var crypto = require('crypto');
@@ -107,6 +108,16 @@ sessionSockets.on('connection', function(err, socket, session) {
 		console.log("initial session.count before = ", session.count);
 		session.count++;
 	}
+	if (session.pac === undefined){
+		session.pac = rdd.get_the_package();
+	}
+	socket.on('get_package', function(){
+		console.log("package request received");
+		if (session.pac === undefined){
+			session.pac = rdd.get_the_package();
+		}
+		socket.emit('rsa_enc_package', {e: session.pac.e, n: session.pac.n});
+	})
 	session.save();
 	console.log("initial session.count after = ", session.count);
 	var user;
@@ -194,7 +205,8 @@ sessionSockets.on('connection', function(err, socket, session) {
 		}
 		var uide = con.escape(data.username);
 		var uid = data.username;
-		var pswd = data.pswd;
+		var pswd = rdd.get_decr_text(data.pswd, session.pac.n, session.pac.d);
+		console.log('decr pswd is ', pswd);
 		var hsd_pswd = undefined;
 		var data = uid;
 		console.log("tablename = ", tablename);
@@ -246,7 +258,8 @@ sessionSockets.on('connection', function(err, socket, session) {
 		}
 		var uide = con.escape(data.username);
 		var uid = data.username;
-		var pswd = data.pswd;
+		var pswd = rdd.get_decr_text(data.pswd, session.pac.n, session.pac.d);
+		console.log('decr pswd is ', pswd);
 		var hsd_pswd = undefined;
 		var data = uid;
 		console.log("tablename = ", tablename);
