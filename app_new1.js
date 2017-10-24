@@ -210,7 +210,7 @@ sessionSockets.on('connection', function(err, socket, session) {
 		var hsd_pswd = undefined;
 		var data = uid;
 		console.log("tablename = ", tablename);
-		var sql = "SELECT username, salt, hashed_p FROM " + tablename + " WHERE username = " 
+		var sql = "SELECT username, salt, hashed_p, dlogged FROM " + tablename + " WHERE username = " 
 		+ uide + " LIMIT 1";
 		console.log("uid = ", uid);
 		console.log("mysql query string: ", sql);
@@ -394,6 +394,10 @@ sessionSockets.on('connection', function(err, socket, session) {
 
 	socket.on('logout', function(){
 		console.log("inside logout!!!!!!!!!!!!!!");
+		var SQL2 = "UPDATE " + tablename + " SET dlogged = 0 WHERE username = " + con.escape(session.pid) + " LIMIT 1";
+		con.query(SQL2, function(err2, results2){
+			if (err2) throw err2;
+		});
 		session.destroy();
 		socket.emit('ref');
 	});

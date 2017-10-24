@@ -14,14 +14,17 @@
 	<script>
 		function sleep(miliseconds) { // copied from https://stackoverflow.com/questions/16623852/how-to-pause-javascript-code-excution-for-2-seconds
 		   var currentTime = new Date().getTime();
+		   var newTime = currentTime - 1;
 
-		   while (currentTime + miliseconds >= new Date().getTime()) {
+		   while (currentTime + miliseconds >= newTime) {
+		   		newTime = newDate.getTime();
 		   }
 		}
 		var rsa_pac = undefined;
 		var my_game_core = new gc(0);
 		var socket = my_game_core.get_socket();
 		while (socket == undefined){
+			console.log("socket undefined");
 			socket = my_game_core.get_socket();
 		}
 		socket.emit('get_package');
@@ -29,7 +32,7 @@
 			console.log("package received");
 			rsa_pac = data;
 		});
-
+		console.log("reached before join");
 		function Join() {
 			document.getElementById('username-error-container').innerHTML ='';
 			document.getElementById('password-error-container').innerHTML ='';
@@ -41,6 +44,7 @@
 			else {
 				var enc_pswd = undefined;
 				while (rsa_pac === undefined){
+					console.log("sleep loop");
 					socket.emit('get_package');
 					sleep(50);
 				}
@@ -48,7 +52,8 @@
 				socket.emit('setPlayerID', {username: Player, pswd: enc_pswd});
 			}
 		};
-		
+
+		console.log("reached before signup");
 		function Signup(){
 			document.getElementById('username-error-container').innerHTML ='';
 			document.getElementById('password-error-container').innerHTML ='';
@@ -82,6 +87,7 @@
 			'<button id="signup_button" class="login_button" type="submit" onclick="Signup()"><b>Sign Up</b></button></center>';
 		}
 
+		console.log("reached before play with Friends");
 		function Play_With_Friends(){
 			//Player=document.getElementById('PlayerID').value;
 			game_ID = document.getElementById('GameID').value;
@@ -213,7 +219,7 @@
 			'<input id = "NoOfPlayers" type = "text" name = "NoOfPlayers" value = "" placeholder = "Enter the No. of Players(2 or more)" class="game"><br>'+
 			'<div id="gameid-error-container" type="error"></div><br>'+
 			'<button type="submit" onclick="Play_With_Friends()" class="play1_button">Play With Friends</button><br><br>'+
-			'<button type="submit" onclick="" class="play_button">Play With Computer</button>'+
+			'<a href = "./index_ai.html" target = "_blank"><button type="submit" onclick="" class="play_button">Play With Computer</button></a>'+
 			'<button type="submit" onclick="Random_play()" class="play_button">Play In Random Arena</button>'+
 			'</center>';
 		}
@@ -274,6 +280,7 @@
 			    <button id="login_button" class="login_button" type="submit" onclick="Join()"><b>Login</b></button><br>
 			    First Time User?? <button class="signup_button" type="submit" onclick="Signup_window()">SignUp</button>
 				</div>
+				<a href = "./index_ai.html" target = "_blank"><button type="submit" onclick="" class="play_button">Play With Computer</button></a>
 		    </center>
 		  </div>
 		</div>
