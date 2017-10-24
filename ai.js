@@ -70,7 +70,7 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 			}
 		}
 		diff_points = ai_points - player_points;
-		return diff_points;
+		return diff_points/3;
 	}
 
 	var ai = function(){
@@ -83,20 +83,18 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 					(currentpos[0][1] != 0 || (currentpos[0][0] - lastpos[0][0] != 1)) &&
 					(currentpos[0][1] != gnoc-1 || (currentpos[0][0] -lastpos[0][0] != -1))){
 					if(currentpos[0][0] - lastpos[0][0] != 0){
-						nextpos = [currentpos[0][0],currentpos[0][1] - currentpos[0][0] + lastpos[0][0]];
-						if(board[nextpos[0]][nextpos[1]] === undefined){
+						if(board[currentpos[0][0]][currentpos[0][1] - currentpos[0][0] + lastpos[0][0]] === undefined){
+							nextpos = [currentpos[0][0],currentpos[0][1] - currentpos[0][0] + lastpos[0][0]];
 							current_diff = find_diff(currentpos,nextpos,lastpos);
 							console.log(current_diff)
 							console.log(nextpos)
 						}
 					}
-					else{
+					else if(board[currentpos[0][0] - currentpos[0][1] + lastpos[0][1]][currentpos[0][1]] === undefined){
 						nextpos = [currentpos[0][0] - currentpos[0][1] + lastpos[0][1],currentpos[0][1]];
-						if(board[nextpos[0]][nextpos[1]] === undefined){
-							current_diff = find_diff(currentpos,nextpos,lastpos);
-							console.log(current_diff)
-							console.log(nextpos)
-						}
+						current_diff = find_diff(currentpos,nextpos,lastpos);
+						console.log(current_diff)
+						console.log(nextpos)
 					}
 				}
 			}
@@ -106,20 +104,18 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 					(currentpos[0][1] != 0 || (currentpos[0][1] - lastpos[0][1] != -1)) &&
 					(currentpos[0][1] != gnoc-1 || (currentpos[0][1] -lastpos[0][1] != 1))){
 					if(currentpos[0][0] - lastpos[0][0] != 0){
-						nextpos = [currentpos[0][0] + currentpos[0][0] - lastpos[0][0],currentpos[0][1]];
-						if(board[nextpos[0]][nextpos[1]] === undefined){
+						if(board[currentpos[0][0] + currentpos[0][0] - lastpos[0][0]][currentpos[0][1]] === undefined){
+							nextpos = [currentpos[0][0] + currentpos[0][0] - lastpos[0][0],currentpos[0][1]];
 							current_diff = find_diff(currentpos,nextpos,lastpos);
 							console.log(current_diff)
 							console.log(nextpos)
 						}
 					}
-					else{
+					else if(board[currentpos[0][0]][currentpos[0][1] + currentpos[0][1] - lastpos[0][1]] === undefined){
 						nextpos = [currentpos[0][0],currentpos[0][1] + currentpos[0][1] - lastpos[0][1]];
-						if(board[nextpos[0]][nextpos[1]] === undefined){
-							current_diff = find_diff(currentpos,nextpos,lastpos);
-							console.log(current_diff)
-							console.log(nextpos)
-						}
+						current_diff = find_diff(currentpos,nextpos,lastpos);
+						console.log(current_diff)
+						console.log(nextpos)
 					}
 				}
 			}
@@ -129,20 +125,18 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 					(currentpos[0][1] != 0 || (currentpos[0][0] - lastpos[0][0] != -1)) &&
 					(currentpos[0][1] != gnoc-1 || (currentpos[0][0] -lastpos[0][0] != 1))){
 					if(currentpos[0][0] - lastpos[0][0] != 0){
-						nextpos = [currentpos[0][0],currentpos[0][1] + currentpos[0][0] - lastpos[0][0]];
-						if(board[nextpos[0]][nextpos[1]] === undefined){
+						if(board[currentpos[0][0]][currentpos[0][1] + currentpos[0][0] - lastpos[0][0]] === undefined){
+							nextpos = [currentpos[0][0],currentpos[0][1] + currentpos[0][0] - lastpos[0][0]];
 							current_diff = find_diff(currentpos,nextpos,lastpos);
 							console.log(current_diff)
 							console.log(nextpos)
 						}
 					}
-					else{
+					else if(board[currentpos[0][0] + currentpos[0][1] - lastpos[0][1]][currentpos[0][1]] === undefined){
 						nextpos = [currentpos[0][0] + currentpos[0][1] - lastpos[0][1],currentpos[0][1]];
-						if(board[nextpos[0]][nextpos[1]] === undefined){
-							current_diff = find_diff(currentpos,nextpos,lastpos);
-							console.log(current_diff)
-							console.log(nextpos)
-						}
+						current_diff = find_diff(currentpos,nextpos,lastpos);
+						console.log(current_diff)
+						console.log(nextpos)
 					}
 				}
 			}
@@ -155,9 +149,14 @@ function AI(board,currentpos,lastpos,gnor,gnoc){
 			// console.log("for loop ended ",i," time")
 		}
 
-		direction = [actual_next_pos[0] - currentpos[0][0],actual_next_pos[1] - currentpos[0][1]];
+		if(nextpos.length != 0){
+			direction = [actual_next_pos[0] - currentpos[0][0],actual_next_pos[1] - currentpos[0][1]];
+			return direction;
+		}
+		else return undefined;
+		// else
 		// console.log("everything was ohk")
-		return direction;
+		
 	}
 	return ai();
 }

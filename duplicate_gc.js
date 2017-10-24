@@ -138,23 +138,24 @@ gc.prototype.kallar = function(self){
 			//console.log("input was ignored");
 		}
 	}
-
-	var curr_board = self.grid.get_board();
-	var ai_fin_and_cur_pos = self.grid.get_final_pos_and_prev_pos(self.ai_pid);
-	var user_fin_and_cur_pos = self.grid.get_final_pos_and_prev_pos(self.user_pid);
-	var current_pos = [ai_fin_and_cur_pos.final_pos, user_fin_and_cur_pos.final_pos];
-	var last_pos = [ai_fin_and_cur_pos.current_pos, user_fin_and_cur_pos.current_pos];
-	var ai_move = AI(curr_board, current_pos, last_pos, self.nor, self.noc);
-	console.log("ai's move is ", ai_move);
-	if (ai_move != undefined){
-		self.grid.add_sequence([
-			self.grid.get_actual_up_no(), 
-			self.ai_pid, 
-			ai_move
-		]);
-	}
-	else{
-		console.log("ai played no move");
+	if(self.grid.get_killed_list().length == 0){
+		var curr_board = self.grid.get_board();
+		var ai_fin_and_cur_pos = self.grid.get_final_pos_and_prev_pos(self.ai_pid);
+		var user_fin_and_cur_pos = self.grid.get_final_pos_and_prev_pos(self.user_pid);
+		var current_pos = [ai_fin_and_cur_pos.final_pos, user_fin_and_cur_pos.final_pos];
+		var last_pos = [ai_fin_and_cur_pos.current_pos, user_fin_and_cur_pos.current_pos];
+		var ai_move = AI(curr_board, current_pos, last_pos, self.nor, self.noc);
+		console.log("ai's move is ", ai_move);
+		if (ai_move != undefined){
+			self.grid.add_sequence([
+				self.grid.get_actual_up_no(), 
+				self.ai_pid, 
+				ai_move
+			]);
+		}
+		else{
+			console.log("ai played no move");
+		}
 	}
 	//self.grid.update();
 
@@ -177,7 +178,7 @@ gc.prototype.kallar = function(self){
 	if(self.game_over_time>=5){
 		self.grid.should_update=false;
 		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), "end");
-		setInterval(window.location.reload(), 2000);
+		// setInterval(window.location.reload(), 2000);
 		window.onkeydown = null;
 	}
 	else {
