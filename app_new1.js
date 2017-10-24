@@ -378,6 +378,13 @@ sessionSockets.on('connection', function(err, socket, session) {
 
 		socket.game_instance=null;
 	});
+
+	socket.on('logout', function(){
+		console.log("inside logout!!!!!!!!!!!!!!");
+		session.destroy();
+		socket.emit('ref');
+	});
+
 	}
 
 

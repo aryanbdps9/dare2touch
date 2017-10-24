@@ -68,7 +68,8 @@ img.Dare2Touch {
 }
 
 .container {
-    padding: 16px;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
 }
 .error{
     color:red;
