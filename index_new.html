@@ -9,10 +9,26 @@
 	<script src="/renderer.js"></script>
 	<script src="/gc.js"></script>
 	<script src="/grid.js"></script>
+	<script src= "./rsa/BigInteger.min.js"></script>
+	<script src="./rsa/rsa_encryptor.js"></script>
 	<script>
-		
+		function sleep(miliseconds) { // copied from https://stackoverflow.com/questions/16623852/how-to-pause-javascript-code-excution-for-2-seconds
+		   var currentTime = new Date().getTime();
+
+		   while (currentTime + miliseconds >= new Date().getTime()) {
+		   }
+		}
+		var rsa_pac = undefined;
 		var my_game_core = new gc(0);
 		var socket = my_game_core.get_socket();
+		while (socket == undefined){
+			socket = my_game_core.get_socket();
+		}
+		socket.emit('get_package');
+		socket.on('rsa_enc_package', function(data){
+			console.log("package received");
+			rsa_pac = data;
+		});
 
 		function Join() {
 			Player=document.getElementById('PlayerID').value;
@@ -20,7 +36,15 @@
 			if(Player==""){document.getElementById('username-error-container').innerHTML ='Please fill in the Username';}
 			if(password==""){document.getElementById('password-error-container').innerHTML ='Please fill in the Password';}
 			// else if (password!="password"){document.getElementById('password-error-container').innerHTML ='Wrong Password';}
-			else socket.emit('setPlayerID', {username: Player, pswd: password});
+			else {
+				var enc_pswd = undefined;
+				while (rsa_pac === undefined){
+					socket.emit('get_package');
+					sleep(50);
+				}
+				enc_pswd = encr(password, rsa_pac.n, rsa_pac.e);
+				socket.emit('setPlayerID', {username: Player, pswd: enc_pswd});
+			}
 		};
 		
 		function Signup(){
@@ -31,7 +55,15 @@
 			else if(password==""){document.getElementById('password-error-container').innerHTML ='Please fill in the Password';}
 			else if(password!=repassword){document.getElementById('password-error-container').innerHTML ='The two passwords do not match';}
 			// else if (password!="password"){document.getElementById('password-error-container').innerHTML ='Wrong Password';}
-			else {socket.emit('create_player', {username: newUser, pswd: password});}
+			else {
+				var enc_pswd = undefined;
+				while (rsa_pac === undefined){
+					socket.emit('get_package');
+					sleep(50);
+				}
+				enc_pswd = encr(password, rsa_pac.n, rsa_pac.e);
+				socket.emit('create_player', {username: newUser, pswd: enc_pswd});
+			}
 		}
 
 		function Signup_window(){
