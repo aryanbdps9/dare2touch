@@ -18,7 +18,7 @@
 		   var newTime = currentTime - 1;
 
 		   while (currentTime + miliseconds >= newTime) {
-		   		newTime = newDate.getTime();
+		   		newTime = new Date().getTime();
 		   }
 		}
 		var rsa_pac = undefined;
@@ -93,7 +93,12 @@
 			//Player=document.getElementById('PlayerID').value;
 			game_ID = document.getElementById('GameID').value;
 			no_OfPlayers = document.getElementById('NoOfPlayers').value;
-			socket.emit('setGameID', {gameID:game_ID, playerID:Player, noOfPlayers:no_OfPlayers});		
+			if(game_ID==""){document.getElementById('gameid-error-container').innerHTML ='Please enter any Game ID';}
+			else if(no_OfPlayers==""){
+				no_OfPlayers=4;
+				socket.emit('setGameID', {gameID:game_ID, playerID:Player, noOfPlayers:no_OfPlayers});
+			}
+			else socket.emit('setGameID', {gameID:game_ID, playerID:Player, noOfPlayers:no_OfPlayers});		
 		}
 
 		// game_ID=-123456789;
@@ -218,7 +223,7 @@
 			'<input id = "GameID" type = "text" name = "GameID" value = "" placeholder = "Enter GameID" class="game">'+
 			'<label><b>No. of Players</b></label>&emsp;'+
 			'<input id = "NoOfPlayers" type = "text" name = "NoOfPlayers" value = "" placeholder = "Enter the No. of Players(2 or more)" class="game"><br>'+
-			'<div id="gameid-error-container" type="error"></div><br>'+
+			'<div id="gameid-error-container" type="error" class="error"></div><br>'+
 			'<button type="submit" onclick="Play_With_Friends()" class="play1_button">Play With Friends</button><br><br>'+
 			'<a href = "./index_ai.html" target = "_blank"><button type="submit" onclick="" class="play_button">Play With Computer</button></a>'+
 			'<button type="submit" onclick="Random_play()" class="play_button">Play In Random Arena</button>'+
@@ -281,7 +286,7 @@
 			    <button id="login_button" class="login_button" type="submit" onclick="Join()"><b>Login</b></button><br>
 			    First Time User?? <button class="signup_button" type="submit" onclick="Signup_window()">SignUp</button>
 				</div>
-				<a href = "./index_ai.html" target = "_blank"><button type="submit" onclick="" class="play_button">Play With Computer</button></a>
+				<!-- <a href = "./index_ai.html" target = "_blank"><button type="submit" onclick="" class="play_button">Play With Computer</button></a> -->
 		    </center>
 		  </div>
 		</div>

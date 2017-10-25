@@ -11,9 +11,9 @@
 	<script>
 		var my_game_core = new gc(0);
 		
-		function startPlay(){
+		function startPlay(level){
 			game_play_area();
-			my_game_core.start_start();
+			my_game_core.start_start(level);
 		}
 
 		// window.location.reload(true);
@@ -40,7 +40,9 @@
 		  </div>
 		  <div id="everything" class="container">
 		  	<center>
-			    <button id="start_play" class="start_play" type="submit" onclick="startPlay()"><b>Play!</b></button><br>
+			    <button id="start_play" class="play1_button" type="submit" onclick="startPlay('easy')"><b>Easy</b></button><br>
+			    <button id="start_play" class="play1_button" type="submit" onclick="startPlay('medium')"><b>Medium</b></button><br>
+			    <button id="start_play" class="play1_button" type="submit" onclick="startPlay('hard')"><b>Hard</b></button><br>
 		    </center>
 		  </div>
 		</div>

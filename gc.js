@@ -370,7 +370,7 @@ gc.prototype.kallar = function(self){
 	else {self.game_over_time=0;}
 	if(self.game_over_time>=5){
 		self.grid.should_update=false;
-		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), "end");
+		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), self.grid.get_alive_players()[0].the_id);
 		setTimeout(function(){self.socket.emit('game_over');}, 3000);
 		window.onkeydown = null;
 		// self.grid = null;

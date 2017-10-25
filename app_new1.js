@@ -299,6 +299,7 @@ sessionSockets.on('connection', function(err, socket, session) {
 		// 		break;
 		// 	}
 		// }
+		console.log("game over is called");
 		socket.emit('game_over1');
 	})
 	socket.on('message', function(data){

@@ -3,7 +3,7 @@ function renderer(board,gnor,gnoc,list_of_players,starting){
 	// arr[1] = [[1,2,3],[0,1,4],[0,2,3]];
 	// arr[2] = [[0,2,3],[1,1,3],[1,1,2]];
 	var startTime = new Date();
-	var list_of_colors=["green", "white", "red", "blue", "yellow"];
+	var list_of_colors=["green", "red", "blue", "yellow", "white"];
 	console.log("renderer was called");
 	var canvas = document.getElementById("myCanvas");
 	var ctx = canvas.getContext("2d");
@@ -13,7 +13,7 @@ function renderer(board,gnor,gnoc,list_of_players,starting){
 	// console.log("cah = ", canvas.height);
 	// console.log("cw = ", window.innerWidth);
 	// console.log("caw = ", canvas.width);
-	var side = Math.min((window.innerWidth - 130)/gnoc, window.innerHeight/gnor);
+	var side = Math.min((window.innerWidth - 150)/gnoc, window.innerHeight/gnor);
 	// console.log("side:  ", side);
 	// var side = 4.1;
 	for (var rr = 0; rr < gnor; rr++){
@@ -47,6 +47,14 @@ function renderer(board,gnor,gnoc,list_of_players,starting){
 		ctx.font = "20px Arial";
 		ctx.fillStyle = list_of_colors[j];
 		ctx.fillText(list_of_players[j][0] + "  "+list_of_players[j][1], gnoc*side+side*5, 10*side+side*(4*j+2));
+		if(starting == list_of_players[j][0]){
+			ctx.font = "50px Arial";
+			ctx.fillStyle = "white";
+			ctx.fillText(""+starting + " Won!!!!", (gnoc*side)/3, (gnor*side)/3);
+			// ctx.font = "50px Arial";
+			// ctx.fillStyle = "red";
+			ctx.fillText("GAME OVER!!!!", (gnoc*side)/3, (gnor*side)/2);
+		}
 	}
 		
 
@@ -56,11 +64,7 @@ function renderer(board,gnor,gnoc,list_of_players,starting){
 		ctx.fillText("Starting in "+ starting + " sec.",(gnoc*side)/3, (gnor*side)/3);
 	}
 	
-	else if(starting == 'end'){
-		ctx.font = "50px Arial";
-		ctx.fillStyle = "red";
-		ctx.fillText("GAME OVER!!!!", (gnoc*side)/3, (gnor*side)/3);
-	}
+	
 	var endTime = new Date();
 	var timeDiff = endTime - startTime;
 	//console.log("time taken is", timeDiff);

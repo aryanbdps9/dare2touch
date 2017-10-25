@@ -2,7 +2,7 @@ gc = function(gid, nop = 2){
 	console.log("new gc created");
 	// var grid = new grid_require(480, 720);
 	// this.nor = 480, this.noc = 720;
-	this.nor = 100, this.noc = 200;
+	this.nor = 80, this.noc = 200;
 	// var grid_require = require('./grid');
 	// var grid = new grid_require('nor, noc');
 	this.grid = new Grid(this.nor, this.noc);
@@ -12,9 +12,9 @@ gc = function(gid, nop = 2){
 	this.game_ID = gid;
 	this.game_over_time = 0;
 	this.total_messages=0;
-	this.user_pid = 1;
+	this.user_pid = 'You';
 	this.myid = this.user_pid;
-	this.ai_pid = 2;
+	this.ai_pid = 'Computer';
 	this.grid.add_player(this.user_pid);
 	this.grid.add_player(this.ai_pid);
 	this.client_last_input_string = '';
@@ -68,8 +68,14 @@ gc.prototype.add_keyboard = function(){
 	}
 }
 
-gc.prototype.start_start = function(){
+gc.prototype.start_start = function(level){
 	var self=this;
+	if(level =='medium'){
+		this.interval=50;
+	}
+	else if (level == 'hard'){
+		this.interval=20;
+	}
 	this.client_count_display(this);
 	this.grid.make_ready_for_update();
 	setTimeout(function(){self.start_updating(self);}, 3000);
@@ -177,9 +183,11 @@ gc.prototype.kallar = function(self){
 	else {self.game_over_time=0;}
 	if(self.game_over_time>=5){
 		self.grid.should_update=false;
-		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), "end");
+		renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), self.grid.get_alive_players()[0].the_id);
 		// setInterval(window.location.reload(), 2000);
+		setTimeout(function(){window.location.reload(true);}, 3000);
 		window.onkeydown = null;
+
 	}
 	else {
 		setTimeout(function(){self.kallar(self);}, curr_interval);
