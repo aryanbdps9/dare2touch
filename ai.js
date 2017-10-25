@@ -1,3 +1,30 @@
+/*!
+ * AI class returns the next direction of AI snake
+ * \class AI
+ * \param board current state of board
+ * \param currentpos current position of AI snake and player snake on the board
+ * \param lastpos previous position of AI snake and player snake on the board
+ * \param gnor total number of rows
+ * \param gnoc total number of columns 
+ * \return Direction of the AI snake
+ */
+
+/*! 
+ * \fn find_diff(currentposition,nextposition,lastposition)
+ * \memberof AI
+ * \param currentposition current position of AI snake and player snake on the board
+ * \param lastposition last position of AI snake and player snake on the board
+ * \param nextposition predicted next move of the AI snake
+ * \return the difference of boxes AI snake could reach first to player snake could reach first
+ */
+
+ /*!
+ * For every possible movement of AI snake find point difference using find_diff(currentposition,nextposition,lastposition) and returns the direction for which point difference is maximum.
+ * \fn ai()
+ * \memberof AI
+ * \return Direction corresponding to the maximum point difference
+ */
+
 function AI(board,currentpos,lastpos,gnor,gnoc){
 	var self = this;
 	var current_diff = -(gnor*gnoc);

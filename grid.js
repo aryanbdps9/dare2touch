@@ -1,3 +1,8 @@
+/*!
+* stores id,position,direction,points,etc parameter of the player.
+* \class gplayer
+*/
+
 function gplayer(){
 	this.the_id = undefined;
 	this.inipos = undefined;
@@ -11,11 +16,143 @@ function gplayer(){
 	// trace won't include the point of death
 }
 
+/*!
+* stores update number,playerid and direction of player present at that lattice(box).
+* \class lattice
+* \param una update number of that lattice(box)
+* \param pid player id of the player present on that lattice
+* \param dirn direction of the player on that lattice
+*/
+
 function lattice(una, pid, dirn){
 	this.un = una;
 	this.pid = pid;
 	this.dir = dirn;
 }
+
+/*!
+* \class Grid
+* \param nora number of rows in the grid
+* \param noca number of columns in the grid
+*/
+
+/*!
+* \fn get_final_pos_and_prev_pos(pid)
+* \memberof Grid
+* \param pid player id of the player
+* \return current position and previous position of the player with player id = pid.
+*/
+
+/*!
+* add player with player id = pid in the grid
+* \fn add_player(pid)
+* \memberof Grid
+* \param pid player id of the player
+* \return list of players containing their player id and points.
+*/
+
+/*!
+* sends the signal that game is ready to play
+* \fn make_ready_for_update()
+* \memberof Grid
+*/
+
+/*!
+* add a new sequence which contains player id,direction,etc information in the sequence of moves.
+* \fn add_sequence(seq)
+* \memberof Grid
+* \param seq new sequence containing player id,direction,etc
+*/
+
+/*!
+* \fn get_seq_of_moves()
+* \memberof Grid
+* \return Sequence of moves
+*/
+
+/*!
+* \fn get_seq_of_unprocessed_moves()
+* \memberof Grid
+* \return Sequence of unprocessed moves which are to be added in sequence of moves.
+*/
+
+/*!
+* Clear all the existing values of the board and set all of it's elements to undefined.
+* \fn clear_board()
+* \memberof Grid
+*/
+
+/*!
+* \fn get_board()
+* \memberof Grid
+* \return current state of the board
+*/
+
+/*!
+* \fn get_alive_players()
+* \memberof Grid
+* \return List of current alive gplayer
+*/
+
+/*!
+* Update the grid whenever called.
+* \fn update()
+* \memberof Grid
+*/
+
+/*!
+* \fn get_killed_list()
+* \memberof Grid
+* \return List of killed gplayers
+*/
+
+/*!
+* Prints the grid on the console
+* \fn print_grid()
+* \memberof Grid
+*/
+
+/*!
+* Remove the player of player id = pida from the Grid
+* \fn remove_player()
+* \memberof Grid
+* \param pida player id of the player
+*/
+
+/*!
+* Clear the board and initialize the game
+* \fn initialize_players()
+* \memberof Grid
+*/
+
+/*!
+* \fn get_ini_list_pid_and_pnts()
+* \memberof Grid
+* \return list of players containing their player id and points.
+*/
+/*!
+* It takes an unprocessed sequence and processes it including updation of grid, updation of points, removal of dead players from the board.
+* \fn oracle(seq)
+* \memberof Grid
+* \param seq sequence of moves
+*/
+/*!
+* \fn get_actual_up_no()
+* \memberof Grid
+* \return actual current update number.
+*/
+
+/*!
+* \fn killed_pid_list()
+* \memberof Grid
+* \return List containing player id of the players which are dead.
+*/
+
+/*!
+* Will stop the game when called(at game over)
+* \fn stop_game()
+* \memberof Grid
+*/
 
 function Grid(nora, noca){
 	var self = this;
