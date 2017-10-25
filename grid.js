@@ -33,6 +33,14 @@ function Grid(nora, noca){
 
 	var initialized = false;
 
+	this.get_final_pos_and_prev_pos = function(pid){
+		var temp_plar = self.get_owner_by_pid(pid);
+		var temp_plar_pos = temp_plar.finalpos;
+		var temp_plar_dir = temp_plar.finaldir;
+		var prev_pos = [(temp_plar_pos[0] - temp_plar_dir[0]), (temp_plar_pos[1] - temp_plar_dir[1])];
+		return {final_pos: temp_plar_pos, current_pos: prev_pos};
+	}
+
 	this.get_last_move = function(pid){
 		var temp_plar = self.get_owner_by_pid(pid).trace;
 		return temp_plar[temp_plar.length - 1][2];
@@ -62,6 +70,7 @@ function Grid(nora, noca){
 			console.log("position of ", p.the_id, " is ", p.inipos);
 		});
 		should_update = true;
+		console.log("grid ready!");
 	}
 
 	this.remove_seq = function(temp_un, pno){
@@ -338,6 +347,7 @@ function Grid(nora, noca){
 			cppy.push(y);
 			cppdiri.push([-1, 0]);
 			cppiniposi.push([cppx[0], y]);
+
 		}
 
 		for(var i = 0; i < cpplen; ++i){
