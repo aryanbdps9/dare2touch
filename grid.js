@@ -393,10 +393,10 @@ function Grid(nora, noca){
 				current_gplayers.push(p);
 				if (p.killed_by != undefined){
 					var killer_obj = self.get_owner_by_pid(p.killed_by);
-					killer_obj.pnts = killer_obj.pnts - 1;
+					killer_obj.pnts = killer_obj.pnts - 100;
 					for (var ii = ini_list_pid_and_pnts.length - 1; ii >= 0; --ii){
 						if (ini_list_pid_and_pnts[ii][0] == p.killed_by){
-							ini_list_pid_and_pnts[ii][1] = ini_list_pid_and_pnts[ii][1] - 1;
+							ini_list_pid_and_pnts[ii][1] = ini_list_pid_and_pnts[ii][1] - 100;
 							break;
 						}
 					}

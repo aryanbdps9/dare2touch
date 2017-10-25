@@ -3,7 +3,7 @@ function renderer(board,gnor,gnoc,list_of_players,starting){
 	// arr[1] = [[1,2,3],[0,1,4],[0,2,3]];
 	// arr[2] = [[0,2,3],[1,1,3],[1,1,2]];
 	var startTime = new Date();
-	var list_of_colors=["green", "blue", "red", "yellow"];
+	var list_of_colors=["green", "white", "red", "blue", "yellow"];
 	console.log("renderer was called");
 	var canvas = document.getElementById("myCanvas");
 	var ctx = canvas.getContext("2d");

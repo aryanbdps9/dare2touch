@@ -23,7 +23,7 @@ gc = function(gid, nop = 2, isServer = false){
 	this.max_nop = nop;
 
 	this.update_switch = undefined;
-	this.interval = 100; // time after which kallar is called;
+	this.interval = 80; // time after which kallar is called;
 	// this.self = this;
 	this.started = false;
 	this.game_ID = gid;
