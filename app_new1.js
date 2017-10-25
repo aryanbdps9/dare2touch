@@ -320,7 +320,11 @@ sessionSockets.on('connection', function(err, socket, session) {
 		session.save();
 	});
 
-
+	socket.on('update_points', function(data){
+		if (socket.game_instance != undefined && socket.game_instance != null){
+			socket.game_instance.marks[session.pid] = data;
+		}
+	});	
 
 
 	socket.on('disconnect', function(){
@@ -340,17 +344,37 @@ sessionSockets.on('connection', function(err, socket, session) {
 				
 			}
 		}
-		if (socket.game_instance != undefined){
+		if (socket.game_instance != undefined && socket.game_instance != null){
 			socket.game_instance.server_remove_player(session.pid);
 			if(socket.game_instance.get_NoOfPlayers() <= 0){
 				len = list_of_games.length;
 				var gg=socket.game_instance.game_ID;
+				var marks_list = socket.game_instance.get_marks_list();
+				for (let key in marks_list){
+					if (marks_list.hasOwnProperty(key)){
+						if (!isNaN(marks_list[key])){
+							let mysql_query1 = "UPDATE " + tablename + " SET points = points + " + marks_list[key]
+							+ " WHERE username = " + con.escape(key) + " LIMIT 1";
+							console.log("Mysql query while updating marks was: ", mysql_query1);
+							con.query(mysql_query1, function(err, results){
+								if (err) throw err;
+								if (results.length <1){
+									console.log("player not found while updating points");
+								}
+							});
+						}
+						else{
+							console.log("marks_list[", key, "] = ", marks_list[key], " this is NaN");
+						}
+					}
+				}
 				for(var i=0; i<len; i++){
 					if(gg == list_of_games[i].game_ID){
 						list_of_games.splice(i, 1);
 						break;
 					}
 				}
+
 			}
 
 		}

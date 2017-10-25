@@ -41,6 +41,16 @@ function Grid(nora, noca){
 		return {final_pos: temp_plar_pos, current_pos: prev_pos};
 	}
 
+	this.get_points_of_player = function(pid){
+		var temp_plar = self.get_owner_by_pid(pid);
+		if (temp_plar == undefined){
+			console.log("get_points_of_player got wrong pid");
+			return 0;
+		}
+		var its_pnts = temp_plar.pnts;
+		return its_pnts;
+	}
+
 	this.get_last_move = function(pid){
 		var temp_plar = self.get_owner_by_pid(pid).trace;
 		return temp_plar[temp_plar.length - 1][2];
@@ -216,6 +226,7 @@ function Grid(nora, noca){
 		console.log("update of grid was called !!!!!!!!!!!!!!!");
 		// returning 0 means false, 1 means true, and 10 means game over
 		if (!should_update){
+			console.log("$$$$$$$$$$$$$$$$$should_update is false$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 			return 0;
 		}
 		else if (current_gplayers.length < 1){
