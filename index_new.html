@@ -14,10 +14,12 @@
 	<script src="./rsa/rsa_encryptor.js"></script>
 	<script>
 		function sleep(miliseconds) { // copied from https://stackoverflow.com/questions/16623852/how-to-pause-javascript-code-excution-for-2-seconds
+		   console.log("Sleep called");
 		   var currentTime = new Date().getTime();
 		   var newTime = currentTime - 1;
 
 		   while (currentTime + miliseconds >= newTime) {
+		   		console.log("are bhai bhai bhai");
 		   		newTime = new Date().getTime();
 		   }
 		}
@@ -28,11 +30,44 @@
 			console.log("socket undefined");
 			socket = my_game_core.get_socket();
 		}
-		socket.emit('get_package');
+		var verifieddd = false;
+
+		function send_pack_req(){
+			console.log("sendin package request");
+			if (socket == undefined){
+				console.log("socket undefined");
+			}
+			socket.emit('get_package');
+			console.log("get_package emit kr diya");
+			let co = 1;
+			while (!verifieddd){
+				console.log("verify nhi hua");
+				socket.emit('get_package');
+				sleep(50);
+				co++;
+				if (co >= 100) {
+					console.log("Breaking the habit");
+					break;
+				}
+			}
+			verifieddd = false;
+
+		}
+
+		window.onload = function(){
+			console.log("window onload called");
+			socket.emit("get_package");
+		}
+
+
+		// socket.emit('get_package');
 		socket.on('rsa_enc_package', function(data){
 			console.log("package received");
 			rsa_pac = data;
+			verifieddd = true;
 		});
+
+		// send_pack_req();
 		console.log("reached before join");
 		function Join() {
 			document.getElementById('username-error-container').innerHTML ='';
@@ -47,7 +82,7 @@
 				while (rsa_pac === undefined){
 					console.log("sleep loop");
 					socket.emit('get_package');
-					sleep(50);
+					sleep(100);
 				}
 				enc_pswd = encr(password, rsa_pac.n, rsa_pac.e);
 				socket.emit('setPlayerID', {username: Player, pswd: enc_pswd});
@@ -199,7 +234,7 @@
 			console.log("exit game was called");
 			window.onkeydown = null;
 			window.location.reload(true);
-			//socket.emit('disconnect1');
+			socket.emit('disconnect1');
 			game_id_area();
 		}
 

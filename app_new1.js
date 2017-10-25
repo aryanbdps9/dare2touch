@@ -117,7 +117,8 @@ sessionSockets.on('connection', function(err, socket, session) {
 			session.pac = rdd.get_the_package();
 		}
 		socket.emit('rsa_enc_package', {e: session.pac.e, n: session.pac.n});
-	})
+	});
+
 	session.save();
 	console.log("initial session.count after = ", session.count);
 	var user;
@@ -429,8 +430,10 @@ sessionSockets.on('connection', function(err, socket, session) {
 
 	}
 
-
-
+	// if (session.pac === undefined){
+	// 	session.pac = rdd.get_the_package();
+	// }
+	// socket.emit('rsa_enc_package', {e: session.pac.e, n: session.pac.n});
 });
 
 http.listen(3000, function() {

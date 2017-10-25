@@ -74,7 +74,7 @@ gc.prototype.start_start = function(level){
 		this.interval=50;
 	}
 	else if (level == 'hard'){
-		this.interval=20;
+		this.interval=30;
 	}
 	this.client_count_display(this);
 	this.grid.make_ready_for_update();
