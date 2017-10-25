@@ -29,7 +29,7 @@ gc = function(gid, nop = 2, isServer = false){
 	this.game_ID = gid;
 	this.game_over_time = 0;
 	this.total_messages=0;
-
+	this.count = 0;
 	console.log("game_ID set to ", this.game_ID, "\tgid is ", gid);
 
 //	initial_procedure:
@@ -41,11 +41,18 @@ gc = function(gid, nop = 2, isServer = false){
 		this.client_last_input_string = '';
 		this.config_connection();
 	}
+	else{
+		this.marks = [];
+	}
 
 
 	
 
 };
+
+gc.prototype.get_marks_list = function(){
+	return this.marks;
+}
 
 gc.prototype.get_NoOfPlayers = function(){
 	return this.server_player_obj_list.length;
@@ -360,6 +367,11 @@ gc.prototype.kallar = function(self){
 	console.log("act_up_no is ", act_up_no);
 	for(i = act_up_no; i <= get_up_no; i++ ){
 		self.grid.update();
+		self.count++;
+		if (self.count > 5){
+			self.socket.emit('update_points', self.grid.get_points_of_player(self.myid));
+			self.count = 0;
+		}
 	}
 	//end_time=new Date();
 	//time_Diff= end_time- start_time;
@@ -438,7 +450,7 @@ gc.prototype.set_socket = function(sock){
 gc.prototype.server_remove_player = function(pida){
 	len = this.server_player_obj_list.length;
 	console.log('length is ', len);
-	console.log('server_player_obj_list is ', this.server_player_obj_list);
+	// console.log('server_player_obj_list is ', this.server_player_obj_list);
 	for(var i=0; i<len; i++){
 		if(pida == this.server_player_obj_list[i].pid){
 			this.server_player_obj_list.splice(i, 1);
