@@ -72,7 +72,7 @@
 		function Join() {
 			document.getElementById('username-error-container').innerHTML ='';
 			document.getElementById('password-error-container').innerHTML ='';
-			Player=document.getElementById('PlayerID').value;
+			Player=document.getElementById('PlayerID').value.trim();
 			password=document.getElementById('password').value;
 			if(Player==""){document.getElementById('username-error-container').innerHTML ='Please fill in the Username';}
 			if(password==""){document.getElementById('password-error-container').innerHTML ='Please fill in the Password';}
@@ -93,7 +93,7 @@
 		function Signup(){
 			document.getElementById('username-error-container').innerHTML ='';
 			document.getElementById('password-error-container').innerHTML ='';
-			newUser = document.getElementById('PlayerID').value;
+			newUser = document.getElementById('PlayerID').value.trim();
 			password=document.getElementById('password').value;
 			repassword=document.getElementById('repassword').value;
 			username_length=newUser.toString().length;
@@ -126,13 +126,15 @@
 		console.log("reached before play with Friends");
 		function Play_With_Friends(){
 			//Player=document.getElementById('PlayerID').value;
-			game_ID = document.getElementById('GameID').value;
-			no_OfPlayers = document.getElementById('NoOfPlayers').value;
+			game_ID = document.getElementById('GameID').value.trim();
+			no_OfPlayers = document.getElementById('NoOfPlayers').value.trim();
 			if(game_ID==""){document.getElementById('gameid-error-container').innerHTML ='Please enter any Game ID';}
 			else if(no_OfPlayers==""){
 				no_OfPlayers=4;
 				socket.emit('setGameID', {gameID:game_ID, playerID:Player, noOfPlayers:no_OfPlayers});
 			}
+			else if(isNaN(no_OfPlayers) || (Number(no_OfPlayers) != parseInt(no_OfPlayers)) || Number(no_OfPlayers) <= 0){document.getElementById('gameid-error-container').innerHTML ='Please enter a positive integer for the no. of players field';}
+			else if(no_OfPlayers==1){document.getElementById('gameid-error-container').innerHTML ='Please choose <b>play with computer</b> for single player';}
 			else socket.emit('setGameID', {gameID:game_ID, playerID:Player, noOfPlayers:no_OfPlayers});		
 		}
 
