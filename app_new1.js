@@ -311,7 +311,7 @@ sessionSockets.on('connection', function(err, socket, session) {
 				console.log("chutiya detected");
 			}
 			else if (temp_list[1] == session.pid){
-				socket.game_instance.server_input_handle(data, socket);
+				socket.game_instance.server_input_handle(data);
 				console.log("message detected");
 			}
 		}

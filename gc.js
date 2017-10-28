@@ -1,3 +1,25 @@
+/*!
+* This class stores every information about a particular game session.
+* This is user both at client side and at server side.
+* At client side, it stores the current state of every player and 
+* orchestrates the gameplay including input handling, communicatiion
+* with server and managing gameplay. 
+* 
+* At the server side, it stores bare minimum information about clients,
+* this is done to reduce server load as most of the heavy computation 
+* is done at the client side.
+* \class gc
+* \param gid The game id, used to distinguish one game session from another.
+* \param nop Number of players that will be there when the game starts
+* \param isServer States whether this object is being created for client 
+* side use or server side use.
+*/
+
+/*!
+* \fn get_*
+* \return *
+*/
+
 gc = function(gid, nop = 2, isServer = false){
 	console.log("new gc created");
 	// var grid = new grid_require(480, 720);
@@ -44,10 +66,6 @@ gc = function(gid, nop = 2, isServer = false){
 	else{
 		this.marks = [];
 	}
-
-
-	
-
 };
 
 gc.prototype.get_marks_list = function(){
@@ -65,6 +83,13 @@ gc.prototype.get_max_nop = function(){
 gc.prototype.unset_self = function(){
 	// this.self = undefined;
 };
+
+/*!
+* \fn add_keyboard()
+* \memberof gc
+* Called on client side.
+* Gets EventListener to listen to keydown event.
+*/
 
 gc.prototype.add_keyboard = function(){
 	if (!this.isServer){
@@ -158,6 +183,17 @@ gc.prototype.get_update_switch = function(){
 gc.prototype.get_started = function(){
 	return this.started;
 };
+
+/*!
+* \fn server_add_player(player)
+* \memberof gc
+* \param player player id to be added to this game session
+* Called on server side.
+* 
+* Adds player to the server_player_obj_list and sends this information to
+* all the remaining players that have already joined the game
+*/
+
 gc.prototype.server_add_player = function(player){
 	console.log("server_add_player called");	
 	// here player is the socket obj and it contains pid
@@ -187,9 +223,27 @@ gc.prototype.server_add_player = function(player){
 	console.log("current_nop:" , this.current_nop, "\tmax_nop:", this.max_nop, "\tfull=", this.full);
 };
 
+/*!
+* \fn client_add_player(pid)
+* \memberof gc
+* \param pid player id to be added
+* Called on client side.
+*
+* Adds player of player id pid to grid
+*/
+
 gc.prototype.client_add_player = function(pid){
 	this.grid.add_player(pid);
 };
+
+/*!
+* \fn start_start()
+* \memberof gc
+* Called on server side.
+* 
+* Tells clients that game is about to start
+* and starts game after a fixed time(3 seconds). 
+*/
 
 gc.prototype.start_start = function(){
 	this.server_player_obj_list.forEach(function(p){
@@ -202,7 +256,14 @@ gc.prototype.start_start = function(){
 	// self = undefined;
 };
 
-	
+
+/*!
+* \fn client_count_display(self)
+* \memberof gc
+* Called on client side.
+* Display countdown when game is about to begin
+*/
+
 
 gc.prototype.client_count_display = function(self){
 	self.grid.make_ready_for_update();
@@ -211,6 +272,15 @@ gc.prototype.client_count_display = function(self){
 	setTimeout(function(){renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), 1);}, 2000);
 }
 // }
+
+
+/*!
+* \fn start_updating(self)
+* \memberof gc
+* When called in server side, it tells all the clients
+* to start the game and when called in client side, it
+* enables keyboard control and then calls kallar.
+*/
 
 
 gc.prototype.start_updating = function(self){
@@ -249,6 +319,17 @@ gc.prototype.start_updating = function(self){
 	console.log("end of start_updating");
 };
 
+/*!
+* \fn add_sequence(seq, self)
+* \memberof gc
+* When called in server side, it informs every player
+* that a particular player has played a move seq
+*
+* When called in client side, it simply adds seq to its
+* grid for further processing
+* \param seq input sequence, it is an array with following structure:
+* [update no, player id, [vertical direction, horizontal direction]]
+*/
 
 gc.prototype.add_sequence = function(seq, self){
 	if (self.isServer){
@@ -267,12 +348,12 @@ gc.prototype.add_sequence = function(seq, self){
 	}
 };
 
-/*gc.prototype.client_onconnected = function(data){
-	var myid = data.playerID;
-	this.max_nop = data.noOfPlayers;
-	this.myid = myid;
-	this.client_add_player(this.myid);
-}*/
+/*!
+* \fn(inp_string)
+* \memberof gc
+* \param inp_string The input string which has to be parsed into a sequence
+* \return a sequence that can be fed into add_sequence.
+*/
 
 gc.prototype.input_data_parser = function(inp_string){
 	var temp_list = inp_string.split("#");
@@ -283,14 +364,14 @@ gc.prototype.input_data_parser = function(inp_string){
 	return type_casted_temp_list;
 };
 
-/*gc.prototype.client_handle_move = function(self, data){
-	// data will be of following format:
-	// str(update_no-pid-x-y) // str means string
-	var temp_list = self.input_data_parser(data);
-	self.grid.add_sequence(data);
-	// type_casted_temp_list = undefined;
-};*/
-
+/*!
+* \fn client_handle_input()
+* \memberof gc
+* handles user input
+* \return an object which has two members: pressed and data_string.
+* Pressed is a string which tells if the input was valid or not 
+* and data_string is the string representation of user input
+*/
 
 gc.prototype.client_handle_input = function(){
 	var temp_str = this.client_last_input_string;
@@ -303,7 +384,14 @@ gc.prototype.client_handle_input = function(){
 	else return {pressed:false, data_string:""};
 };
 
-gc.prototype.server_input_handle = function(data, player){
+/*!
+* \fn server_input_handle(data, player)
+* \memberof gc
+* \param string representation of client's move
+* handles user input given by client.
+*/
+
+gc.prototype.server_input_handle = function(data){
 	console.log("input_handle, player: ");
 	// console.log(player);
 	var temp_list = this.input_data_parser(data);
@@ -321,29 +409,18 @@ gc.prototype.server_input_handle = function(data, player){
 	
 }
 
+/*!
+* \fn kallar(self)
+* \memberof gc
+* It is called in the client side. It orchestrates the whole gameplay
+* By processing user input, updating grid state and displaying the current board state
+*/
 
 gc.prototype.kallar = function(self){
 	console.log("#####################################################");
-	//console.log("kallar was called");
-	// console.log("alive players", self.grid.get_alive_players());
-
-	// console.log("this: ", this);
-	//console.log("self: ", self);
-	//console.log("this.isServer: ", self.get_isServer);
-	//console.log("self.isServer: ", self.get_isServer);
-	//console.log("board:");
-	
-	
-	//console.log("will call renderer");
 	renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), 0);
-	//console.log("player list is:");
-	//console.log("called renderer");
-	//console.log(self.isServer);
-	//console.log(self.grid.get_board());
-	//console.log("my id is: ", self.myid);
-	var c_inp = self.client_handle_input(); // c_input is of
+	var c_inp = self.client_handle_input();
 	if (c_inp.pressed){
-		//i.e. input was pressed
 		var baby_inp = self.input_data_parser(c_inp.data_string);
 		var last_p_dir = self.grid.get_last_move(baby_inp[1]);
 		if (Math.abs(last_p_dir[0]) != Math.abs(baby_inp[2][0]) || Math.abs(baby_inp[2][1]) != Math.abs(last_p_dir[1])){
@@ -400,6 +477,14 @@ gc.prototype.kallar = function(self){
 
 };
 
+/*!
+* \fn mover(seq, self)
+* \memberof gc
+* \param seq input sequence
+* 
+* checks if the move is played by other player, if yes, then it adds 
+* seq to grid.
+*/
 
 gc.prototype.mover =function(seq, self){
 	self.total_messages++;
@@ -409,33 +494,31 @@ gc.prototype.mover =function(seq, self){
 		}
 }
 
-gc.prototype.client_remove_seq = function(up_no){
-	console.log("entered client_remove_seq");
-	if (!this.isServer){
-		this.grid.remove_seq(up_no, this.myid);
-	}
-}
+/*!
+* \fn client_kill_player(self, pida)
+* \memberof gc
+* \param pida The player id to be removed
+* Kills the player with player id pida
+*/
 
 gc.prototype.client_kill_player = function(self, pida){
 	self.grid.remove_player(pida);
 };
-
-
-gc.prototype.client_ondisconnect = function(self){
-	if (self.update_switch != undefined){
-		clearInterval(self.update_switch);
-		self.update_switch = undefined;
-	}
-	self.socket.emit('remove',self.myid);
-	//self.grid.stop_game();
-};
-
 
 gc.prototype.get_socket = function(){
 	//console.log("socket inside get_socket in gc:");
 	//console.log(this.socket);
 	return this.socket;
 };
+
+/*!
+* \fn client_onconnected(self, data)
+* \memberof gc
+* \param self reference to this gc object
+* \param data object containing playedID, noOfPlayers and gameID
+* sets myid, max_nop of self, sets gameID and adds 
+* the client to the game
+*/
 
 gc.prototype.client_onconnected  = function(self, data){
 	var myid = data.playerID;
@@ -446,9 +529,16 @@ gc.prototype.client_onconnected  = function(self, data){
 	self.set_gameID(data.gameID);
 }
 
-gc.prototype.set_socket = function(sock){
-	this.socket = sock;
-}
+/*!
+* \fn server_remove_player(pida)
+* \memberof gc
+
+* \param pida
+*
+* Called on the server side. 
+* It asks all the clients in the current game area to kill player
+* with player id pida. 
+*/
 
 gc.prototype.server_remove_player = function(pida){
 	len = this.server_player_obj_list.length;
@@ -466,6 +556,12 @@ gc.prototype.server_remove_player = function(pida){
 	});
 };
 
+/*!
+* \fn config_connection()
+* \memberof gc
+* Called in client side. It configures the connection with the server.
+*/
+
 gc.prototype.config_connection = function(){
 	var self=this;
 	this.socket = io.connect();
@@ -479,9 +575,6 @@ gc.prototype.config_connection = function(){
 		//self.client_ondisconnect(self);
 	});
 
-	//Handle when we connect to the server, showing state and storing id's.
-	//On error we just show that we are not connected for now. Can print the data.
-	this.socket.on('error', this.client_ondisconnect);
 	this.socket.on('s_add_player', function(pid){
 		self.grid.add_player(pid);
 	}); //
@@ -495,7 +588,6 @@ gc.prototype.config_connection = function(){
 	this.socket.on('game_over', this.client_game_over); //
 	this.socket.on('killit', function(data){self.client_kill_player(self, data)}); 
 	this.socket.on('starting_game', function(){self.client_count_display(self);});
-	this.socket.on('rejected', this.client_remove_seq);
 	this.socket.on('accepted_inp_seq', function(){console.log('yaay! seq accepted');});
 };
 

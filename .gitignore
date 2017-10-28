@@ -1,5 +1,7 @@
 npm_modules
 node_modules
+html
+html/*
 gameSessionClass.txt
 bower_components
 trash
