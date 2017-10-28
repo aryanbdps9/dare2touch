@@ -16,10 +16,22 @@
 */
 
 /*!
-* \fn get_*
-* \return *
+* \fn get_marks_list()
+* \memberof gc
+* \return list of marks
 */
 
+/*!
+* \fn get_NoOfPlayers()
+* \memberof gc
+* \return length of players on server
+*/
+
+/*!
+* \fn get_max_nop()
+* \memberof gc
+* \return maximum possible players
+*/
 gc = function(gid, nop = 2, isServer = false){
 	console.log("new gc created");
 	// var grid = new grid_require(480, 720);
@@ -142,18 +154,38 @@ gc.prototype.get_isServer = function(){
 	return this.isServer;
 };
 
+/*!
+* \fn get_grid()
+* \memberof gc
+* \return grid
+*/
 gc.prototype.get_grid = function(){
 	return this.grid;
 };
 
+/*!
+* \fn get_nor()
+* \memberof gc
+* \return number of rows
+*/
 gc.prototype.get_nor = function(){
 	return this.nor;
 };
 
+/*!
+* \fn get_noc()
+* \memberof gc
+* \return number of columns
+*/
 gc.prototype.get_noc = function(){
 	return this.noc;
 };
 
+/*!
+* \fn get_gameID()
+* \memberof gc
+* \return game id
+*/
 gc.prototype.get_gameID = function(){
 	return this.game_ID;
 };
@@ -168,10 +200,20 @@ gc.prototype.get_full = function(){
 	return this.full;
 };
 
+/*!
+* \fn get_current_nop()
+* \memberof gc
+* \return current number of players
+*/
 gc.prototype.get_current_nop = function(){
 	return this.current_nop;
 };
 
+/*!
+* \fn get_server_player_obj_list()
+* \memberof gc
+* \return list of players connected to server
+*/
 gc.prototype.get_server_player_obj_list = function(){
 	return this.server_player_obj_list;
 };
