@@ -1,3 +1,34 @@
+/*!
+* \class rsa_decrypt
+* This class has functions to get necessary numbers to encrypt and decrypt data using RSA algorithm.
+* It also has methods to decrypt data.
+*/
+
+/*!
+* \fn get_the_package()
+* \memberof rsa_decrypt.
+* \return an object which has all the numbers to encrypt data.
+* and decrypt it, i.e. public keys and private keys.
+*/
+
+
+/*!
+* \fn bi_to_text(num)
+* \memberof rsa_decrypt
+* \param num it is a big integer.
+* \memberof rsa_decrypt.
+* \return the actual string of big integer num.
+*/
+
+/*!
+* \fn get_decr_text(c, n, d)
+* \memberof rsa_decrypt
+* \param c It is the cyphertext in string form.
+* \param n It is the product of primes used in RSA encryption. It is in big integer form.
+* \param d It is the private key  used in RSA encryption. It is in big integer form.
+* \return It returns the actual decrypted plain text.
+*/
+
 rsa_decrypt = function(){
 	this.bigInt = require('./BigInteger.min.js');
 	this.self = this;
@@ -58,6 +89,8 @@ rsa_decrypt.prototype.bi_to_text = function(num){
 	}
 	return out;
 }
+
+
 
 rsa_decrypt.prototype.get_decr_text = function(c, n, d){
 	// c is string, phin and d are bigInt;

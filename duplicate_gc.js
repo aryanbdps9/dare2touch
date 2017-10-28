@@ -1,4 +1,77 @@
-gc = function(gid, nop = 2){
+/*!
+* This class stores every information about a particular game session.
+* It has no connection with server. At client side, it stores the current state of player
+* and AI, and it orchestrates the gameplay including input handling, communicatiion
+* with AI and managing gameplay. 
+* 
+* \class ai_gc
+* \param gid The game id, used to distinguish one game session from another.
+* \param nop Number of players that will be there when the game starts
+* side use or server side use.
+*/
+
+
+/*!
+* \fn add_keyboard()
+* \memberof ai_gc
+* Called on client side.
+* Gets EventListener to listen to keydown event.
+*/
+
+/*!
+* \fn start_start()
+* \memberof ai_gc
+* 
+* Tells player that game is about to start by showing countdown
+* and starts game after a fixed time(3 seconds). 
+*/
+
+/*!
+* \fn client_count_display(self)
+* \memberof ai_gc
+* Called on client side.
+* Display countdown when game is about to begin
+*/
+
+/*!
+* \fn start_updating(self)
+* \memberof ai_gc
+* It enables keyboard control and then calls kallar.
+*/
+
+/*!
+* \fn add_sequence(seq, self)
+* \memberof ai_gc
+* It simply adds seq to its grid for further processing
+* \param seq input sequence, it is an array with following structure:
+* [update no, player id, [vertical direction, horizontal direction]]
+*/
+
+/*!
+* \fn input_data_parser(inp_string)
+* \memberof ai_gc
+* \param inp_string The input string which has to be parsed into a sequence
+* \return a sequence that can be fed into add_sequence.
+*/
+
+/*!
+* \fn client_handle_input()
+* \memberof ai_gc
+* handles user input
+* \return an object which has two members: pressed and data_string.
+* Pressed is a string which tells if the input was valid or not 
+* and data_string is the string representation of user input
+*/
+
+/*!
+* \fn kallar(self)
+* \memberof ai_gc
+* It is called in the client side. It orchestrates the whole gameplay
+* By processing user input, updating grid state and displaying the current board state
+*/
+
+
+ai_gc = function(gid, nop = 2){
 	console.log("new gc created");
 	// var grid = new grid_require(480, 720);
 	// this.nor = 480, this.noc = 720;
@@ -24,7 +97,7 @@ gc = function(gid, nop = 2){
 
 };
 
-gc.prototype.add_keyboard = function(){
+ai_gc.prototype.add_keyboard = function(){
 	var seld = this;
 	console.log("started is", this.started);
 	if(this.started){
@@ -68,7 +141,7 @@ gc.prototype.add_keyboard = function(){
 	}
 }
 
-gc.prototype.start_start = function(level){
+ai_gc.prototype.start_start = function(level){
 	var self=this;
 	if(level =='medium'){
 		this.interval=50;
@@ -82,18 +155,13 @@ gc.prototype.start_start = function(level){
 	// self = undefined;
 };
 
-	
-
-gc.prototype.client_count_display = function(self){
-	// self.grid.make_ready_for_update();
+ai_gc.prototype.client_count_display = function(self){
 	setTimeout(function(){renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), 3);}, 000);
 	setTimeout(function(){renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), 2);}, 1000);
 	setTimeout(function(){renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), 1);}, 2000);
 }
-// }
 
-
-gc.prototype.start_updating = function(self){
+ai_gc.prototype.start_updating = function(self){
 	startTime = new Date();
 	console.log("start_updating called");	
 	console.log("client part being called");
@@ -103,13 +171,14 @@ gc.prototype.start_updating = function(self){
 	console.log("end of start_updating");
 };
 
-
-gc.prototype.add_sequence = function(seq, self){
+ai_gc.prototype.add_sequence = function(seq, self){
 		self.grid.add_sequence(seq);
 		console.log("adding sequence in client");
 };
 
-gc.prototype.input_data_parser = function(inp_string){
+
+
+ai_gc.prototype.input_data_parser = function(inp_string){
 	var temp_list = inp_string.split("#");
 	var type_casted_temp_list = [parseInt(temp_list[0]), temp_list[1]];
 	var temp_dir_list = [parseInt(temp_list[2]), parseInt(temp_list[3])];
@@ -118,7 +187,9 @@ gc.prototype.input_data_parser = function(inp_string){
 	return type_casted_temp_list;
 };
 
-gc.prototype.client_handle_input = function(){
+
+
+ai_gc.prototype.client_handle_input = function(){
 	var temp_str = this.client_last_input_string;
 	var temp_seq = this.client_last_input_string.split("#");
 	var pressed = false;
@@ -129,7 +200,7 @@ gc.prototype.client_handle_input = function(){
 	else return {pressed:false, data_string:""};
 };
 
-gc.prototype.kallar = function(self){
+ai_gc.prototype.kallar = function(self){
 	console.log("#####################################################");
 	renderer (self.grid.get_board(), self.nor, self.noc, self.grid.get_ini_list_pid_and_pnts(), 0);
 	var c_inp = self.client_handle_input(); // c_input is of
@@ -201,40 +272,7 @@ gc.prototype.kallar = function(self){
 
 };
 
-
-gc.prototype.get_max_nop = function(){
-	return this.max_nop;
-};
-
-gc.prototype.get_full = function(){
-	return this.full;
-};
-
-gc.prototype.get_current_nop = function(){
-	return this.current_nop;
-};
-
-gc.prototype.get_started = function(){
-	return this.started;
-};
-
-gc.prototype.get_grid = function(){
-	return this.grid;
-};
-
-gc.prototype.get_nor = function(){
-	return this.nor;
-};
-
-gc.prototype.get_noc = function(){
-	return this.noc;
-};
-
-gc.prototype.get_gameID = function(){
-	return this.game_ID;
-};
-
-gc.prototype.set_gameID = function(newgid){
+ai_gc.prototype.set_gameID = function(newgid){
 	console.log("changing game_ID. Old game_ID = ", this.game_ID);
 	this.game_ID = newgid;
 	console.log("new game_ID = ", this.game_ID);

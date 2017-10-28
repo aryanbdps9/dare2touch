@@ -15,6 +15,7 @@
 * side use or server side use.
 */
 
+
 /*!
 * \fn get_marks_list()
 * \memberof gc
@@ -32,6 +33,175 @@
 * \memberof gc
 * \return maximum possible players
 */
+
+/*!
+* \fn get_nor()
+* \memberof gc
+* \return number of rows
+*/
+
+/*!
+* \fn get_noc()
+* \memberof gc
+* \return number of columns
+*/
+
+
+/*!
+* \fn get_gameID()
+* \memberof gc
+* \return game id
+*/
+
+
+/*!
+* \fn get_current_nop()
+* \memberof gc
+* \return current number of players
+*/
+
+/*!
+* \fn get_server_player_obj_list()
+* \memberof gc
+* \return list of players connected to server
+*/
+
+
+/*!
+* \fn add_keyboard()
+* \memberof gc
+* Called on client side.
+* Gets EventListener to listen to keydown event.
+*/
+
+/*!
+* \fn server_add_player(player)
+* \memberof gc
+* \param player player id to be added to this game session
+* Called on server side.
+* 
+* Adds player to the server_player_obj_list and sends this information to
+* all the remaining players that have already joined the game
+*/
+
+/*!
+* \fn client_add_player(pid)
+* \memberof gc
+* \param pid player id to be added
+* Called on client side.
+*
+* Adds player of player id pid to grid
+*/
+
+/*!
+* \fn start_start()
+* \memberof gc
+* Called on server side.
+* 
+* Tells clients that game is about to start
+* and starts game after a fixed time(3 seconds). 
+*/
+
+/*!
+* \fn client_count_display(self)
+* \memberof gc
+* Called on client side.
+* Display countdown when game is about to begin
+*/
+
+/*!
+* \fn start_updating(self)
+* \memberof gc
+* When called in server side, it tells all the clients
+* to start the game and when called in client side, it
+* enables keyboard control and then calls kallar.
+*/
+
+/*!
+* \fn add_sequence(seq, self)
+* \memberof gc
+* When called in server side, it informs every player
+* that a particular player has played a move seq
+*
+* When called in client side, it simply adds seq to its
+* grid for further processing
+* \param seq input sequence, it is an array with following structure:
+* [update no, player id, [vertical direction, horizontal direction]]
+*/
+
+/*!
+* \fn input_data_parser(inp_string)
+* \memberof gc
+* \param inp_string The input string which has to be parsed into a sequence
+* \return a sequence that can be fed into add_sequence.
+*/
+
+/*!
+* \fn client_handle_input()
+* \memberof gc
+* handles user input
+* \return an object which has two members: pressed and data_string.
+* Pressed is a string which tells if the input was valid or not 
+* and data_string is the string representation of user input
+*/
+
+/*!
+* \fn server_input_handle(data, player)
+* \memberof gc
+* \param string representation of client's move
+* handles user input given by client.
+*/
+
+/*!
+* \fn kallar(self)
+* \memberof gc
+* It is called in the client side. It orchestrates the whole gameplay
+* By processing user input, updating grid state and displaying the current board state
+*/
+
+/*!
+* \fn mover(seq, self)
+* \memberof gc
+* \param seq input sequence
+* 
+* checks if the move is played by other player, if yes, then it adds 
+* seq to grid.
+*/
+
+/*!
+* \fn client_kill_player(self, pida)
+* \memberof gc
+* \param pida The player id to be removed
+* Kills the player with player id pida
+*/
+
+/*!
+* \fn client_onconnected(self, data)
+* \memberof gc
+* \param self reference to this gc object
+* \param data object containing playedID, noOfPlayers and gameID
+* sets myid, max_nop of self, sets gameID and adds 
+* the client to the game
+*/
+
+/*!
+* \fn server_remove_player(pida)
+* \memberof gc
+
+* \param pida
+*
+* Called on the server side. 
+* It asks all the clients in the current game area to kill player
+* with player id pida. 
+*/
+
+/*!
+* \fn config_connection()
+* \memberof gc
+* Called in client side. It configures the connection with the server.
+*/
+
+
 gc = function(gid, nop = 2, isServer = false){
 	console.log("new gc created");
 	// var grid = new grid_require(480, 720);
@@ -96,13 +266,6 @@ gc.prototype.unset_self = function(){
 	// this.self = undefined;
 };
 
-/*!
-* \fn add_keyboard()
-* \memberof gc
-* Called on client side.
-* Gets EventListener to listen to keydown event.
-*/
-
 gc.prototype.add_keyboard = function(){
 	if (!this.isServer){
 			var seld = this;
@@ -154,38 +317,18 @@ gc.prototype.get_isServer = function(){
 	return this.isServer;
 };
 
-/*!
-* \fn get_grid()
-* \memberof gc
-* \return grid
-*/
 gc.prototype.get_grid = function(){
 	return this.grid;
 };
 
-/*!
-* \fn get_nor()
-* \memberof gc
-* \return number of rows
-*/
 gc.prototype.get_nor = function(){
 	return this.nor;
 };
 
-/*!
-* \fn get_noc()
-* \memberof gc
-* \return number of columns
-*/
 gc.prototype.get_noc = function(){
 	return this.noc;
 };
 
-/*!
-* \fn get_gameID()
-* \memberof gc
-* \return game id
-*/
 gc.prototype.get_gameID = function(){
 	return this.game_ID;
 };
@@ -200,20 +343,10 @@ gc.prototype.get_full = function(){
 	return this.full;
 };
 
-/*!
-* \fn get_current_nop()
-* \memberof gc
-* \return current number of players
-*/
 gc.prototype.get_current_nop = function(){
 	return this.current_nop;
 };
 
-/*!
-* \fn get_server_player_obj_list()
-* \memberof gc
-* \return list of players connected to server
-*/
 gc.prototype.get_server_player_obj_list = function(){
 	return this.server_player_obj_list;
 };
@@ -225,16 +358,6 @@ gc.prototype.get_update_switch = function(){
 gc.prototype.get_started = function(){
 	return this.started;
 };
-
-/*!
-* \fn server_add_player(player)
-* \memberof gc
-* \param player player id to be added to this game session
-* Called on server side.
-* 
-* Adds player to the server_player_obj_list and sends this information to
-* all the remaining players that have already joined the game
-*/
 
 gc.prototype.server_add_player = function(player){
 	console.log("server_add_player called");	
@@ -265,27 +388,9 @@ gc.prototype.server_add_player = function(player){
 	console.log("current_nop:" , this.current_nop, "\tmax_nop:", this.max_nop, "\tfull=", this.full);
 };
 
-/*!
-* \fn client_add_player(pid)
-* \memberof gc
-* \param pid player id to be added
-* Called on client side.
-*
-* Adds player of player id pid to grid
-*/
-
 gc.prototype.client_add_player = function(pid){
 	this.grid.add_player(pid);
 };
-
-/*!
-* \fn start_start()
-* \memberof gc
-* Called on server side.
-* 
-* Tells clients that game is about to start
-* and starts game after a fixed time(3 seconds). 
-*/
 
 gc.prototype.start_start = function(){
 	this.server_player_obj_list.forEach(function(p){
@@ -299,13 +404,6 @@ gc.prototype.start_start = function(){
 };
 
 
-/*!
-* \fn client_count_display(self)
-* \memberof gc
-* Called on client side.
-* Display countdown when game is about to begin
-*/
-
 
 gc.prototype.client_count_display = function(self){
 	self.grid.make_ready_for_update();
@@ -315,14 +413,6 @@ gc.prototype.client_count_display = function(self){
 }
 // }
 
-
-/*!
-* \fn start_updating(self)
-* \memberof gc
-* When called in server side, it tells all the clients
-* to start the game and when called in client side, it
-* enables keyboard control and then calls kallar.
-*/
 
 
 gc.prototype.start_updating = function(self){
@@ -361,18 +451,6 @@ gc.prototype.start_updating = function(self){
 	console.log("end of start_updating");
 };
 
-/*!
-* \fn add_sequence(seq, self)
-* \memberof gc
-* When called in server side, it informs every player
-* that a particular player has played a move seq
-*
-* When called in client side, it simply adds seq to its
-* grid for further processing
-* \param seq input sequence, it is an array with following structure:
-* [update no, player id, [vertical direction, horizontal direction]]
-*/
-
 gc.prototype.add_sequence = function(seq, self){
 	if (self.isServer){
 		console.log("adding sequence in server");
@@ -390,13 +468,6 @@ gc.prototype.add_sequence = function(seq, self){
 	}
 };
 
-/*!
-* \fn(inp_string)
-* \memberof gc
-* \param inp_string The input string which has to be parsed into a sequence
-* \return a sequence that can be fed into add_sequence.
-*/
-
 gc.prototype.input_data_parser = function(inp_string){
 	var temp_list = inp_string.split("#");
 	var type_casted_temp_list = [parseInt(temp_list[0]), temp_list[1]];
@@ -405,15 +476,6 @@ gc.prototype.input_data_parser = function(inp_string){
 	temp_dir_list = undefined;
 	return type_casted_temp_list;
 };
-
-/*!
-* \fn client_handle_input()
-* \memberof gc
-* handles user input
-* \return an object which has two members: pressed and data_string.
-* Pressed is a string which tells if the input was valid or not 
-* and data_string is the string representation of user input
-*/
 
 gc.prototype.client_handle_input = function(){
 	var temp_str = this.client_last_input_string;
@@ -425,13 +487,6 @@ gc.prototype.client_handle_input = function(){
 	}
 	else return {pressed:false, data_string:""};
 };
-
-/*!
-* \fn server_input_handle(data, player)
-* \memberof gc
-* \param string representation of client's move
-* handles user input given by client.
-*/
 
 gc.prototype.server_input_handle = function(data){
 	console.log("input_handle, player: ");
@@ -450,13 +505,6 @@ gc.prototype.server_input_handle = function(data){
 	//}
 	
 }
-
-/*!
-* \fn kallar(self)
-* \memberof gc
-* It is called in the client side. It orchestrates the whole gameplay
-* By processing user input, updating grid state and displaying the current board state
-*/
 
 gc.prototype.kallar = function(self){
 	console.log("#####################################################");
@@ -519,15 +567,6 @@ gc.prototype.kallar = function(self){
 
 };
 
-/*!
-* \fn mover(seq, self)
-* \memberof gc
-* \param seq input sequence
-* 
-* checks if the move is played by other player, if yes, then it adds 
-* seq to grid.
-*/
-
 gc.prototype.mover =function(seq, self){
 	self.total_messages++;
 	if(seq[1]!= self.myid){
@@ -535,13 +574,6 @@ gc.prototype.mover =function(seq, self){
 		//self.socket.emit('endtime');
 		}
 }
-
-/*!
-* \fn client_kill_player(self, pida)
-* \memberof gc
-* \param pida The player id to be removed
-* Kills the player with player id pida
-*/
 
 gc.prototype.client_kill_player = function(self, pida){
 	self.grid.remove_player(pida);
@@ -553,15 +585,6 @@ gc.prototype.get_socket = function(){
 	return this.socket;
 };
 
-/*!
-* \fn client_onconnected(self, data)
-* \memberof gc
-* \param self reference to this gc object
-* \param data object containing playedID, noOfPlayers and gameID
-* sets myid, max_nop of self, sets gameID and adds 
-* the client to the game
-*/
-
 gc.prototype.client_onconnected  = function(self, data){
 	var myid = data.playerID;
 	console.log("data in client_onconnected is ", data)
@@ -570,17 +593,6 @@ gc.prototype.client_onconnected  = function(self, data){
 	self.client_add_player(myid);
 	self.set_gameID(data.gameID);
 }
-
-/*!
-* \fn server_remove_player(pida)
-* \memberof gc
-
-* \param pida
-*
-* Called on the server side. 
-* It asks all the clients in the current game area to kill player
-* with player id pida. 
-*/
 
 gc.prototype.server_remove_player = function(pida){
 	len = this.server_player_obj_list.length;
@@ -597,12 +609,6 @@ gc.prototype.server_remove_player = function(pida){
 		p.emit('player_disconnected', pida);
 	});
 };
-
-/*!
-* \fn config_connection()
-* \memberof gc
-* Called in client side. It configures the connection with the server.
-*/
 
 gc.prototype.config_connection = function(){
 	var self=this;
